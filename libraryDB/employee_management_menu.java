@@ -45,6 +45,7 @@ public class employee_management_menu {
                         System.out.println("\n Enter Address Information: (Type NULL if N/A)");
                         scanner.nextLine();
                         System.out.println("Unit No.         : "); a.unit_no        = scanner.nextLine();
+                        System.out.println("Street No.       : "); a.street_no       = scanner.nextLine();
                         System.out.println("Barangay         : "); a.barangay        = scanner.nextLine();
                         System.out.println("City             : "); a.city           = scanner.nextLine();
                         System.out.println("Province         : "); a.province       = scanner.nextLine();
@@ -54,16 +55,17 @@ public class employee_management_menu {
                         // Adding an address record
                         e.address_id = a.add_Address();
 
-
-
                         // System.out.println("Branch ID         : "); e.branch_id      = scanner.nextLine();
 
-
-
-                        e.add_Employee();
+                        if (e.add_Employee() == 1) {
+                            System.out.println("Employee record created successfully!");
+                        } else {
+                            System.out.println("Error creating employee record.");
+                        }
                         break;
                     case 2:
-                        System.out.println("    ");
+
+
                         break;
                     case 3:
                         System.out.println("    ");
