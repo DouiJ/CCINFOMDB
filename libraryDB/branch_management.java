@@ -17,7 +17,7 @@ public class branch_management {
         this.phone_no = "";
     }
 
-    public int add_Branch_Management() {
+    public String add_Branch() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -36,7 +36,7 @@ public class branch_management {
             }
 
             int branchIDNumber = Integer.parseInt(maxBranchID.substring(1)) + 1; //Extract the number part only and add 1
-            branch_id = "B" + String.format("%04d", branchIDNumber);
+            this.branch_id = "B" + String.format("%04d", branchIDNumber);
 
             String sql = "INSERT INTO Branches (branch_id, manager_id, address_id, phone_no) VALUES (?, ?, ?, ?)";
             PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -51,11 +51,11 @@ public class branch_management {
 
             pstmt.close();
             connection.close();
-            return 1;
+            return branch_id;
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return 0;
+            return null;
         }
     }
 
