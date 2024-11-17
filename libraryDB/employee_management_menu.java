@@ -7,9 +7,51 @@ public class employee_management_menu {
     public employee_management_menu() {
     }
 
+    private void displayEmployeeInfo(employee_record_management e) {
+        System.out.println("Current Employee Information:  ");
+        System.out.println("-------------------------------------------------------------------");
+        System.out.println("Last Name         : "  + e.last_name);
+        System.out.println("First Name        : "  + e.first_name);
+        System.out.println("Job ID            : "  + e.job_id);
+        System.out.println("Age               : "  + e.age);
+        System.out.println("Phone No.         : "  + e.phone_no);
+        System.out.println("Email Address     : "  + e.email);
+        System.out.println("Hire Date         : "  + e.hire_date);
+        System.out.println("Address ID        : "  + e.address_id);
+        System.out.println("Branch ID         : "  + e.branch_id);
+        System.out.println("-------------------------------------------------------------------");
+    }
+
+    private void inputEmployeeInfo(employee_record_management e) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter employee information: ");
+        scanner.nextLine();
+        System.out.println("\nLast Name       : "); e.last_name = scanner.nextLine();
+        System.out.println("First Name        : "); e.first_name = scanner.nextLine();
+        System.out.println("Job ID (1-4)      : "); e.job_id = Integer.parseInt(scanner.nextLine());
+        System.out.println("Age               : "); e.age = Integer.parseInt(scanner.nextLine());
+        System.out.println("Phone No.         : "); e.phone_no = scanner.nextLine();
+        System.out.println("Email Address     : "); e.email = scanner.nextLine();
+    }
+
+    private void inputAddressInfo(ref_address_management a) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n Enter Address Information: (Type NULL if N/A)");
+        scanner.nextLine();
+        System.out.println("Unit No.         : "); a.unit_no        = scanner.nextLine();
+        System.out.println("Street No.       : "); a.street_no       = scanner.nextLine();
+        System.out.println("Barangay         : "); a.barangay        = scanner.nextLine();
+        System.out.println("City             : "); a.city           = scanner.nextLine();
+        System.out.println("Province         : "); a.province       = scanner.nextLine();
+        System.out.println("Region           : "); a.region          = scanner.nextLine();
+        System.out.println("Zip Code         : "); a.zip_code         = Integer.parseInt(scanner.nextLine());
+    }
+
     public int employee_menu() {
         int choice = 0;
         Scanner scanner = new Scanner(System.in);
+        employee_record_management e = new employee_record_management();
+        ref_address_management a = new ref_address_management();
 
         while (true) {
             System.out.println("═══════════════════════════════════════════════════════════════");
@@ -29,49 +71,67 @@ public class employee_management_menu {
 
                 switch (choice) {
                     case 1:
-                        // Ask user input
-                        employee_record_management e = new employee_record_management();
-                        ref_address_management a = new ref_address_management();
-
-                        System.out.print("Enter employee information: ");
-                        scanner.nextLine();
-                        System.out.println("\nLast Name       : "); e.last_name      = scanner.nextLine();
-                        System.out.println("First Name        : "); e.first_name     = scanner.nextLine();
-                        System.out.println("Job ID (1-4)      : "); e.job_id         = Integer.parseInt(scanner.nextLine());
-                        System.out.println("Age               : "); e.age            = Integer.parseInt(scanner.nextLine());
-                        System.out.println("Phone No.         : "); e.phone_no       = scanner.nextLine();
-                        System.out.println("Email Address     : "); e.email          = scanner.nextLine();
-
-                        System.out.println("\n Enter Address Information: (Type NULL if N/A)");
-                        scanner.nextLine();
-                        System.out.println("Unit No.         : "); a.unit_no        = scanner.nextLine();
-                        System.out.println("Street No.       : "); a.street_no       = scanner.nextLine();
-                        System.out.println("Barangay         : "); a.barangay        = scanner.nextLine();
-                        System.out.println("City             : "); a.city           = scanner.nextLine();
-                        System.out.println("Province         : "); a.province       = scanner.nextLine();
-                        System.out.println("Region           : "); a.region          = scanner.nextLine();
-                        System.out.println("Zip Code         : "); a.zip_code         = Integer.parseInt(scanner.nextLine());
-
-                        // Adding an address record
+                        // Create an employee record with its dependencies
+                        inputEmployeeInfo(e);
+                        inputAddressInfo(a);
                         e.address_id = a.add_Address();
 
-                        // System.out.println("Branch ID         : "); e.branch_id      = scanner.nextLine();
+                        // Assign its Branch_ID to the current selected branch
 
-                        if (e.add_Employee() == 1) {
+                        if (e.add_Employee() == 1)
                             System.out.println("Employee record created successfully!");
-                        } else {
+                         else
                             System.out.println("Error creating employee record.");
-                        }
                         break;
                     case 2:
+                        // Update an employee record
+                        System.out.println("Enter Employee ID to be updated: ");
+                        System.out.println("Employee ID        : "); e.employee_id = scanner.nextLine();
 
+                        if (e.get_Employee() == 0)
+                            System.out.println("Employee record not found. Please input a proper ID.");
+                        else {
+                            displayEmployeeInfo(e);
 
+                            inputEmployeeInfo(e);
+                            inputAddressInfo(a);
+
+                            System.out.println("Do you want to to proceed with the update? (Y/N) ");
+                            if (scanner.nextLine().equalsIgnoreCase("Y")) {
+                                e.update_Employee();
+                                a.update_Address();
+                            }
+                            else
+                                System.out.println("Employee update cancelled.");
+
+                            // Update for Branch
+                            // Get Branch List - Show from there
+
+                        }
                         break;
                     case 3:
-                        System.out.println("    ");
+                        System.out.println("Enter Employee ID to be updated: ");
+                        System.out.println("Employee ID        : "); e.employee_id = scanner.nextLine();
+
+                        if (e.get_Employee() == 0)
+                            System.out.println("Employee record not found. Please input a proper ID.");
+                        else {
+                            System.out.println("Do you want to to proceed with the deletion? (Y/N) ");
+                            if (scanner.nextLine().equalsIgnoreCase("Y"))
+                                e.delete_Employee();
+                            else
+                                System.out.println("Employee deletion cancelled.");
+                        }
                         break;
                     case 4:
-                        System.out.println("    ");
+                        // View an employee record
+                        System.out.println("Enter Employee ID to be updated: ");
+                        System.out.println("Employee ID        : "); e.employee_id = scanner.nextLine();
+
+                        if (e.get_Employee() == 0)
+                            System.out.println("Employee record not found. Please input a proper ID.");
+                        else
+                            displayEmployeeInfo(e);
                         break;
                     case 0:
                         System.out.println("Exiting Employee Record Management.");

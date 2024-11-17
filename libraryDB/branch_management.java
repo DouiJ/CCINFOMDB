@@ -21,29 +21,24 @@ public class branch_management {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
-                "pass"
-        )){
+                "3d6%vQmT"
+        )) {
             System.out.println("Connection to DB Successful.");
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT MAX(branch_id) FROM branches");
 
             //Get the highest id value
             String maxBranchID = "B0000";
-            if (resultSet.next()){
+            if (resultSet.next()) {
                 maxBranchID = resultSet.getString(1);
-                if(resultSet.wasNull()){
+                if (resultSet.wasNull())
                     maxBranchID = "B0000";
-                }
             }
-
 
             int branchIDNumber = Integer.parseInt(maxBranchID.substring(1)) + 1; //Extract the number part only and add 1
             branch_id = "B" + String.format("%04d", branchIDNumber);
 
-
-
             String sql = "INSERT INTO Branches (branch_id, manager_id, address_id, phone_no) VALUES (?, ?, ?, ?)";
-
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, branch_id);
@@ -68,12 +63,11 @@ public class branch_management {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
-                "pass"
-        )){
+                "3d6%vQmT"
+        )) {
             System.out.println("Connection to DB Successful.");
 
             String sql = "UPDATE Branches SET branch_id=?, manager_id=?, address_id=?, phone_no=? WHERE branch_id=?";
-
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, branch_id);
@@ -87,7 +81,7 @@ public class branch_management {
             pstmt.close();
             connection.close();
             return 1;
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return 0;
         }
@@ -97,8 +91,8 @@ public class branch_management {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
-                "pass"
-        )){
+                "3d6%vQmT"
+        )) {
             System.out.println("Connection to DB Successful.");
 
             String sql = "DELETE FROM Branches WHERE branch_id=?";
@@ -112,7 +106,7 @@ public class branch_management {
             pstmt.close();
             connection.close();
             return 1;
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return 0;
         }
@@ -124,8 +118,8 @@ public class branch_management {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
-                "pass"
-        )){
+                "3d6%vQmT"
+        )) {
             System.out.println("Connection to DB Successful.");
 
             String sql = "SELECT * FROM Branches WHERE branch_id=?";
@@ -134,7 +128,7 @@ public class branch_management {
             pstmt.setString(1, branch_id);
             ResultSet resultSet = pstmt.executeQuery();
 
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 manager_id = resultSet.getString("manager_id");
                 address_id = resultSet.getString("address_id");
                 phone_no = resultSet.getString("phone_no");
@@ -144,11 +138,13 @@ public class branch_management {
             pstmt.close();
             connection.close();
             return recordcount;
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             return 0;
         }
     }
+
+
 
 }
 

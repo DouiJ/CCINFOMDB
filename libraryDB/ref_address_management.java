@@ -134,17 +134,31 @@ public class ref_address_management {
         int recordcount = 0;
 
         try {
+            Connection conn;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+            System.out.println("Connection to DB Successful.");
 
 
+            PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM Ref_address WHERE address_id=?");
+            pstmt.setString(1, address_id);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                unit_no = rs.getString("unit_no");
+                street_no = rs.getString("street_no");
+                barangay = rs.getString("barangay");
+                city = rs.getString("city");
+                province = rs.getString("province");
+                region = rs.getString("region");
+                zip_code = rs.getInt("zip_code");
+                recordcount++;
+            }
 
             return recordcount;
         } catch (Exception e) {
             System.out.println("Error getting addres:" + e.getMessage());
             return 0;
         }
-
     }
-
-
 
 }
