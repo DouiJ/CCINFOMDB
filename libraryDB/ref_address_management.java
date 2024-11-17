@@ -46,7 +46,10 @@ public class ref_address_management {
                             "VALUES (?, ?, ?, ?, ?, ?, ?)");
 
             pstmt.setString(1, address_id);
-            pstmt.setString(2, unit_no);
+            if (unit_no.isEmpty() || unit_no.equals("NULL"))
+                pstmt.setNull(2, Types.VARCHAR);
+            else
+                pstmt.setString(2, unit_no);
             pstmt.setString(3, barangay);
             pstmt.setString(4, city);
             pstmt.setString(5, province);
@@ -64,5 +67,8 @@ public class ref_address_management {
             return null;
         }
     }
+
+
+
 
 }

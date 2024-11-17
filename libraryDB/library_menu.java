@@ -24,16 +24,15 @@ public class library_menu {
             System.out.println("═══════════════════════════════════════════════════════════════");
             System.out.printf("   %-2s ➤ %-40s%n", "[1]", "Employee Management");
             System.out.printf("   %-2s ➤ %-40s%n", "[2]", "Patron Management");
-            System.out.printf("   %-2s ➤ %-40s%n", "[3]", "Branch Management");
-            System.out.printf("   %-2s ➤ %-40s%n", "[4]", "Book Inventory Management");
-            System.out.printf("   %-2s ➤ %-40s%n", "[5]", "Book Details Management");
-            System.out.printf("   %-2s ➤ %-40s%n", "[6]", "Book Borrowing Processing");
-            System.out.printf("   %-2s ➤ %-40s%n", "[7]", "Book Acquisitions Processing");
-            System.out.printf("   %-2s ➤ %-40s%n", "[8]", "Book Reviews Processing");
-            System.out.printf("   %-2s ➤ %-40s%n", "[9]", "Overdue/Lost Fines Processing");
+            System.out.printf("   %-2s ➤ %-40s%n", "[3]", "Book Inventory Management");
+            System.out.printf("   %-2s ➤ %-40s%n", "[4]", "Book Details Management");
+            System.out.printf("   %-2s ➤ %-40s%n", "[5]", "Book Borrowing Processing");
+            System.out.printf("   %-2s ➤ %-40s%n", "[6]", "Book Acquisitions Processing");
+            System.out.printf("   %-2s ➤ %-40s%n", "[7]", "Book Reviews Processing");
+            System.out.printf("   %-2s ➤ %-40s%n", "[8]", "Overdue/Lost Fines Processing");
             System.out.printf("   %-2s ➤ %-40s%n", "[0]", "Exit");
             System.out.println("═══════════════════════════════════════════════════════════════");
-            System.out.println("📌 Use numbers (0 - 9) to navigate the menu.");
+            System.out.println("📌 Use numbers (0 - 8) to navigate the menu.");
 
             System.out.print("➡️  Enter your choice: ");
             choice = scanner.nextInt();

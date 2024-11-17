@@ -17,11 +17,12 @@ public class branch_menu {
             System.out.println("                     📚 LIBRARY MANAGEMENT SYSTEM 📚           ");
             System.out.println("                         Command Line Menu                     ");
             System.out.println("═══════════════════════════════════════════════════════════════");
-            System.out.printf("   %-2s ➤ %-40s%n", "[1]", "Choose A Branch to Manage");
-            System.out.printf("   %-2s ➤ %-40s%n", "[2]", "Reports Generation ~~ Report 1");
-            System.out.printf("   %-2s ➤ %-40s%n", "[3]", "Reports Generation ~~ Report 2");
-            System.out.printf("   %-2s ➤ %-40s%n", "[4]", "Reports Generation ~~ Report 3");
-            System.out.printf("   %-2s ➤ %-40s%n", "[5]", "Reports Generation ~~ Report 4");
+            System.out.printf("   %-2s ➤ %-40s%n", "[1]", "Create a Branch");
+            System.out.printf("   %-2s �� %-40s%n", "[2]", "Choose a Branch to Manage");
+            System.out.printf("   %-2s ➤ %-40s%n", "[3]", "Reports Generation ~~ Report 1");
+            System.out.printf("   %-2s ➤ %-40s%n", "[4]", "Reports Generation ~~ Report 2");
+            System.out.printf("   %-2s ➤ %-40s%n", "[5]", "Reports Generation ~~ Report 3");
+            System.out.printf("   %-2s ➤ %-40s%n", "[6]", "Reports Generation ~~ Report 4");
             System.out.printf("   %-2s ➤ %-40s%n", "[0]", "Exit");
             System.out.println("═══════════════════════════════════════════════════════════════");
             System.out.println("📌 Use numbers (0-5) to navigate the menu.");
@@ -32,7 +33,6 @@ public class branch_menu {
             switch (choice) {
                 case 1:
                     // Choose Branch operations
-
 
                     break;
                 case 2:
