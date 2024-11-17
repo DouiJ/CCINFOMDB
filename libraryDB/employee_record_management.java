@@ -43,7 +43,6 @@ public class employee_record_management {
 
             Connection conn;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-            System.out.println("Connection to DB Successful.");
 
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT MAX(employee_id) FROM Employees");
@@ -88,7 +87,6 @@ public class employee_record_management {
         try {
             Connection conn;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-            System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("UPDATE Employees SET last_name=?, first_name=?, job_id=?, age=?, phone_no=?, email=?, hire_date=?, address_id=?, branch_id=? WHERE employee_id=?");
 
@@ -120,7 +118,6 @@ public class employee_record_management {
         try {
             Connection conn;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-            System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Employees WHERE employee_id=?");
             pstmt.setString(1, employee_id);
@@ -145,7 +142,6 @@ public class employee_record_management {
         try {
             Connection conn;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-            System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM Employees WHERE employee_id = ?");
             pstmt.setString(1, employee_id);
@@ -164,6 +160,8 @@ public class employee_record_management {
                 recordcount++;
             }
 
+            pstmt.close();
+            conn.close();
             return recordcount;
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -28,7 +28,7 @@ public class employee_management_menu {
         scanner.nextLine();
         System.out.println("\nLast Name       : "); e.last_name = scanner.nextLine();
         System.out.println("First Name        : "); e.first_name = scanner.nextLine();
-        System.out.println("Job ID (1-4)      : "); e.job_id = Integer.parseInt(scanner.nextLine());
+        System.out.println("Job ID (J1 - J4)  : "); e.job_id = Integer.parseInt(scanner.nextLine());
         System.out.println("Age               : "); e.age = Integer.parseInt(scanner.nextLine());
         System.out.println("Phone No.         : "); e.phone_no = scanner.nextLine();
         System.out.println("Email Address     : "); e.email = scanner.nextLine();

@@ -4,14 +4,6 @@ import java.sql.*;
 
 public class ref_address_management {
 
-    //    Reference Tables
-//   - Managed by System Management
-//   - Create a new Reference
-//   - Deactivate a Reference
-//   - Update a Reference
-//   - Delete a Reference
-//   - List Reference Records
-
     public String address_id;
     public String unit_no;      // Can be NULL for branches, Not null for employees
     public String street_no;
@@ -81,7 +73,6 @@ public class ref_address_management {
         try {
             Connection conn;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-            System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("UPDATE Ref_address SET unit_no=?, street_no=?, barangay=?, city=?, province=?, region=?, zip_code=? WHERE address_id=?");
 
@@ -96,7 +87,6 @@ public class ref_address_management {
             pstmt.setString(6, region);
             pstmt.setInt(7, zip_code);
             pstmt.setString(8, address_id);
-
             pstmt.executeUpdate();
             System.out.println("Record was updated");
 
@@ -113,11 +103,10 @@ public class ref_address_management {
         try {
             Connection conn;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-            System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Ref_address WHERE address_id=?");
-            pstmt.setString(1, address_id);
 
+            pstmt.setString(1, address_id);
             pstmt.executeUpdate();
             System.out.println("Record was deleted");
 
@@ -136,8 +125,6 @@ public class ref_address_management {
         try {
             Connection conn;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-            System.out.println("Connection to DB Successful.");
-
 
             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM Ref_address WHERE address_id=?");
             pstmt.setString(1, address_id);
@@ -154,11 +141,15 @@ public class ref_address_management {
                 recordcount++;
             }
 
+            pstmt.close();
+            conn.close();
             return recordcount;
         } catch (Exception e) {
             System.out.println("Error getting addres:" + e.getMessage());
             return 0;
         }
     }
+
+    // Listing?
 
 }
