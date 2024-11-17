@@ -1,5 +1,6 @@
 package libraryDB;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class branch_menu {
@@ -7,18 +8,36 @@ public class branch_menu {
     public branch_menu() {
     }
 
+    private void displayBranches(ArrayList<String> branches){
+        System.out.println("Current Branch Information:  ");
+        System.out.println("-------------------------------------------------------------------");
+        for (int i = 0; i < branches.size(); i++){
+            System.out.println(i + ". BranchID: " + branches.get(i));
+        }
+        System.out.println("-------------------------------------------------------------------");
+    }
+
     private void displayBranchInfo(branch_management b) {
         System.out.println("Current Branch Information:  ");
         System.out.println("-------------------------------------------------------------------");
-        System.out.println("Manager ID         : "  + b.manager_id);
+        System.out.println("Manager ID        : "  + b.manager_id);
         System.out.println("Address ID        : "  + b.address_id);
         System.out.println("Phone No.         : "  + b.phone_no);
         System.out.println("-------------------------------------------------------------------");
     }
 
+    private String inputChooseBranch(ArrayList<String> branches){
+        Scanner scanner = new Scanner(System.in);
+        String branchID;
+        System.out.print("Choose: ");
+        scanner.nextLine();
+        System.out.println("\nBranch ID        : "); branchID = scanner.nextLine();
+        return branchID;
+    }
+
     private void inputBranchInfo(branch_management b) {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter employee information: ");
+        System.out.print("Enter branch information: ");
         scanner.nextLine();
         System.out.println("\nManager ID        : "); b.manager_id = scanner.nextLine();
         System.out.println("Phone No.         : "); b.phone_no = scanner.nextLine();
@@ -104,7 +123,6 @@ public class branch_menu {
                         System.out.println("Error creating employee record.");
                         break;
                     }
-
                     //Create Branch Address
                     inputBranchAddressInfo(aB);
                     b.address_id = aB.add_Address();
@@ -116,7 +134,23 @@ public class branch_menu {
                     }
                     break;
                 case 2:
-                    System.out.println("    ");
+                    ArrayList<String> branches = b.get_Branches();
+                    displayBranches(branches);
+                    boolean exist = false;
+
+                    String editBranchID = inputChooseBranch(branches);
+                    for (String branch : branches){
+                        if (editBranchID == branch){
+                            exist = true;
+                            break;
+                        }
+                    }
+
+                    if (exist){
+                        //Go to another class to edit the chosen branch
+                    }else {
+                        System.out.println("Branch does not exist");
+                    }
                     break;
                 case 3:
                     System.out.println("    ");

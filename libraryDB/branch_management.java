@@ -1,6 +1,7 @@
 package libraryDB;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class branch_management {
 
@@ -53,13 +54,47 @@ public class branch_management {
             connection.close();
             return branch_id;
 
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return null;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return null;
         }
     }
 
-    public int update_Branch() {
+    public ArrayList<String> get_Branches() {
+        try (Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://127.0.0.1:3306/library",
+                "root",
+                "3d6%vQmT"
+        )) {
+            System.out.println("Connection to DB Successful.");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT branch_id FROM branches");
+
+            // Print out all the Branch IDs
+
+            ArrayList<String> branches = new ArrayList<String>();
+
+            while (resultSet.next()) {
+                String branchID = resultSet.getString(1);
+                if (branchID != null) {
+                    branches.add(branchID);
+                }
+            }
+            return branches;
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return null;
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public int update_Branch(String edit_branch) {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -74,6 +109,8 @@ public class branch_management {
             pstmt.setString(2, manager_id);
             pstmt.setString(3, address_id);
             pstmt.setString(4, phone_no);
+
+            pstmt.setString(5, edit_branch);
 
             pstmt.executeUpdate();
             System.out.println("Record was updated");
