@@ -38,7 +38,7 @@ public class employee_record_management {
 //        - List Records using a Filter
 
     // Create a new Record
-    public int add_Employee() {
+    public String add_Employee() {
         try {
 
             Connection conn;
@@ -76,10 +76,10 @@ public class employee_record_management {
 
             pstmt.close();
             conn.close();
-            return 1;
+            return employee_id;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return 0;
+            return null;
         }
     }
 

@@ -1,5 +1,7 @@
 package libraryDB;
 
+import java.sql.*;
+
 public class ref_job_title_management {
 
 //    Reference Tables
@@ -15,7 +17,11 @@ public class ref_job_title_management {
     public String job_title;    // VARCHAR(20) based on id - 1 - Manager, 2 - Archivist, 3 - Clerk, 4 - Tech Support
     public float salary;        // DECIMAL(6,2)
 
-
+    public ref_job_title_management(){
+        this.job_id = 0;
+        this.job_title = "";
+        this.salary = 0.0;
+    }
 
 
 }
