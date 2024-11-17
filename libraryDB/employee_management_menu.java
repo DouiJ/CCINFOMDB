@@ -46,6 +46,7 @@ public class employee_management_menu {
                         // Input logic for adding an address record
                         e.address_id = a.add_Address();
 
+
                         // System.out.println("Branch ID         : "); e.branch_id      = scanner.nextLine();
 
                         e.add_Employee();
