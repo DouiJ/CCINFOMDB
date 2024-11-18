@@ -1,6 +1,7 @@
 package libraryDB;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class branch_management {
 
@@ -17,7 +18,7 @@ public class branch_management {
         this.phone_no = "";
     }
 
-    public int add_Branch_Management() {
+    public String add_Branch() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -36,7 +37,7 @@ public class branch_management {
             }
 
             int branchIDNumber = Integer.parseInt(maxBranchID.substring(1)) + 1; //Extract the number part only and add 1
-            branch_id = "B" + String.format("%04d", branchIDNumber);
+            this.branch_id = "B" + String.format("%04d", branchIDNumber);
 
             String sql = "INSERT INTO Branches (branch_id, manager_id, address_id, phone_no) VALUES (?, ?, ?, ?)";
             PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -51,11 +52,45 @@ public class branch_management {
 
             pstmt.close();
             connection.close();
-            return 1;
+            return branch_id;
 
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return null;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return 0;
+            System.out.println("Unexpected error: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public ArrayList<String> get_Branches() {
+        try (Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://127.0.0.1:3306/library",
+                "root",
+                "3d6%vQmT"
+        )) {
+            System.out.println("Connection to DB Successful.");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT branch_id FROM branches");
+
+            // Print out all the Branch IDs
+
+            ArrayList<String> branches = new ArrayList<String>();
+
+            while (resultSet.next()) {
+                String branchID = resultSet.getString(1);
+                if (branchID != null) {
+                    branches.add(branchID);
+                }
+            }
+            return branches;
+
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return null;
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            return null;
         }
     }
 
@@ -67,13 +102,14 @@ public class branch_management {
         )) {
             System.out.println("Connection to DB Successful.");
 
-            String sql = "UPDATE Branches SET branch_id=?, manager_id=?, address_id=?, phone_no=? WHERE branch_id=?";
+            String sql = "UPDATE Branches SET manager_id=?, address_id=?, phone_no=? WHERE branch_id=?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
-            pstmt.setString(1, branch_id);
-            pstmt.setString(2, manager_id);
-            pstmt.setString(3, address_id);
-            pstmt.setString(4, phone_no);
+            pstmt.setString(1, manager_id);
+            pstmt.setString(2, address_id);
+            pstmt.setString(3, phone_no);
+
+            pstmt.setString(4, branch_id);
 
             pstmt.executeUpdate();
             System.out.println("Record was updated");
@@ -81,8 +117,11 @@ public class branch_management {
             pstmt.close();
             connection.close();
             return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
@@ -106,8 +145,11 @@ public class branch_management {
             pstmt.close();
             connection.close();
             return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
@@ -138,8 +180,46 @@ public class branch_management {
             pstmt.close();
             connection.close();
             return recordcount;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    public int get_Branch_Manager() {
+        int recordcount = 0;
+
+        try (Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://127.0.0.1:3306/library",
+                "root",
+                "3d6%vQmT"
+        )) {
+            System.out.println("Connection to DB Successful.");
+
+            String sql = "SELECT * FROM Branches WHERE branch_id=? && manager_id=?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+
+            pstmt.setString(1, branch_id);
+            pstmt.setString(1, manager_id);
+            ResultSet resultSet = pstmt.executeQuery();
+
+            while (resultSet.next()) {
+                address_id = resultSet.getString("address_id");
+                phone_no = resultSet.getString("phone_no");
+                recordcount++;
+            }
+
+            pstmt.close();
+            connection.close();
+            return recordcount;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }

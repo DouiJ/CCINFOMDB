@@ -78,7 +78,7 @@ public class employee_management_menu {
 
                         // Assign its Branch_ID to the current selected branch
 
-                        if (e.add_Employee() == 1)
+                        if (e.add_Employee() != null)
                             System.out.println("Employee record created successfully!");
                          else
                             System.out.println("Error creating employee record.");

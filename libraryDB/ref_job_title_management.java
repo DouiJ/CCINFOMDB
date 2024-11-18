@@ -20,7 +20,7 @@ public class ref_job_title_management {
     public ref_job_title_management() {
         job_id = "";
         job_title = "";
-        salary = 0.00f;
+        salary = 0.00;
     }
 
     public int add_Job_Title() {
