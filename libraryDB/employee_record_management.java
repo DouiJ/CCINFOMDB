@@ -169,5 +169,12 @@ public class employee_record_management {
         }
     }
 
+    public String getClerkID() {
+
+    }
+
+    public String getArchivistID() {
+
+    }
 
 }
