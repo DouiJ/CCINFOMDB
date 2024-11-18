@@ -4,7 +4,7 @@ import java.util.Scanner;
 
 public class single_branch_menu {
 
-    //VARIABLES
+    // VARIABLES
     private String single_branchID;
 
     public single_branch_menu() {
@@ -14,69 +14,83 @@ public class single_branch_menu {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter branch information: ");
         scanner.nextLine();
-        System.out.println("\nManager ID        : "); b.manager_id = scanner.nextLine();
-        System.out.println("Phone No.         : "); b.phone_no = scanner.nextLine();
+        System.out.println("\nManager ID        : ");
+        b.manager_id = scanner.nextLine();
+        System.out.println("Phone No.         : ");
+        b.phone_no = scanner.nextLine();
     }
 
     private void inputEmployeeInfo(employee_record_management e) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter employee information: ");
         scanner.nextLine();
-        System.out.println("\nLast Name       : "); e.last_name = scanner.nextLine();
-        System.out.println("First Name        : "); e.first_name = scanner.nextLine();
+        System.out.println("\nLast Name       : ");
+        e.last_name = scanner.nextLine();
+        System.out.println("First Name        : ");
+        e.first_name = scanner.nextLine();
         e.job_id = 1; // Assigning as Manager of the Branch
-        System.out.println("Age               : "); e.age = Integer.parseInt(scanner.nextLine());
-        System.out.println("Phone No.         : "); e.phone_no = scanner.nextLine();
-        System.out.println("Email Address     : "); e.email = scanner.nextLine();
+        System.out.println("Age               : ");
+        e.age = Integer.parseInt(scanner.nextLine());
+        System.out.println("Phone No.         : ");
+        e.phone_no = scanner.nextLine();
+        System.out.println("Email Address     : ");
+        e.email = scanner.nextLine();
     }
 
     private void inputAddressInfo(ref_address_management a) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n Enter Employee Address Information: (Type NULL if N/A)");
         scanner.nextLine();
-        System.out.println("Unit No.         : "); a.unit_no        = scanner.nextLine();
-        System.out.println("Street No.       : "); a.street_no       = scanner.nextLine();
-        System.out.println("Barangay         : "); a.barangay        = scanner.nextLine();
-        System.out.println("City             : "); a.city           = scanner.nextLine();
-        System.out.println("Province         : "); a.province       = scanner.nextLine();
-        System.out.println("Region           : "); a.region          = scanner.nextLine();
-        System.out.println("Zip Code         : "); a.zip_code         = Integer.parseInt(scanner.nextLine());
+        System.out.println("Unit No.         : ");
+        a.unit_no = scanner.nextLine();
+        System.out.println("Street No.       : ");
+        a.street_no = scanner.nextLine();
+        System.out.println("Barangay         : ");
+        a.barangay = scanner.nextLine();
+        System.out.println("City             : ");
+        a.city = scanner.nextLine();
+        System.out.println("Province         : ");
+        a.province = scanner.nextLine();
+        System.out.println("Region           : ");
+        a.region = scanner.nextLine();
+        System.out.println("Zip Code         : ");
+        a.zip_code = Integer.parseInt(scanner.nextLine());
     }
 
     private void displayBranchInfo(branch_management b) {
         System.out.println("Current Branch Information:  ");
         System.out.println("-------------------------------------------------------------------");
-        System.out.println("Manager ID        : "  + b.manager_id);
-        System.out.println("Address ID        : "  + b.address_id);
-        System.out.println("Phone No.         : "  + b.phone_no);
+        System.out.println("Manager ID        : " + b.manager_id);
+        System.out.println("Address ID        : " + b.address_id);
+        System.out.println("Phone No.         : " + b.phone_no);
         System.out.println("-------------------------------------------------------------------");
     }
 
     private void displayManagerInfo(employee_record_management e) {
         System.out.println("Current Manager Information:  ");
         System.out.println("-------------------------------------------------------------------");
-        System.out.println("Last Name         : "  + e.last_name);
-        System.out.println("First Name        : "  + e.first_name);
-        System.out.println("Job ID            : "  + e.job_id);
-        System.out.println("Age               : "  + e.age);
-        System.out.println("Phone No.         : "  + e.phone_no);
-        System.out.println("Email Address     : "  + e.email);
-        System.out.println("Hire Date         : "  + e.hire_date);
-        System.out.println("Address ID        : "  + e.address_id);
-        System.out.println("Branch ID         : "  + e.branch_id);
+        System.out.println("Last Name         : " + e.last_name);
+        System.out.println("First Name        : " + e.first_name);
+        System.out.println("Job ID            : " + e.job_id);
+        System.out.println("Age               : " + e.age);
+        System.out.println("Phone No.         : " + e.phone_no);
+        System.out.println("Email Address     : " + e.email);
+        System.out.println("Hire Date         : " + e.hire_date);
+        System.out.println("Address ID        : " + e.address_id);
+        System.out.println("Branch ID         : " + e.branch_id);
         System.out.println("-------------------------------------------------------------------");
     }
 
     private void displayAddressInfo(ref_address_management a) {
         System.out.println("Current Manager Information:  ");
         System.out.println("-------------------------------------------------------------------");
-        System.out.println("Unit No.          : "  + a.unit_no);
-        System.out.println("Street No.        : "  + a.street_no);
-        System.out.println("Barangay          : "  + a.barangay);
-        System.out.println("City              : "  + a.city);
-        System.out.println("Province          : "  + a.province);
-        System.out.println("Region            : "  + a.region);
-        System.out.println("Zip Code          : "  + a.zip_code);
+        System.out.println("Unit No.          : " + a.unit_no);
+        System.out.println("Street No.        : " + a.street_no);
+        System.out.println("Barangay          : " + a.barangay);
+        System.out.println("City              : " + a.city);
+        System.out.println("Province          : " + a.province);
+        System.out.println("Region            : " + a.region);
+        System.out.println("Zip Code          : " + a.zip_code);
         System.out.println("-------------------------------------------------------------------");
     }
 
@@ -87,7 +101,6 @@ public class single_branch_menu {
         b.branch_id = single_branchID;
         ref_address_management a = new ref_address_management();
         employee_record_management e = new employee_record_management();
-
 
         while (true) {
             b.get_Branch();
@@ -109,7 +122,7 @@ public class single_branch_menu {
 
                     inputBranchInfo(b);
 
-                    if(b.get_Branch_Manager() == 0)
+                    if (b.get_Branch_Manager() == 0)
                         System.out.println("Manager ID not found. Please input a proper ID.");
                     else {
                         inputAddressInfo(a);
@@ -117,8 +130,7 @@ public class single_branch_menu {
                         if (scanner.nextLine().equalsIgnoreCase("Y")) {
                             b.update_Branch();
                             a.update_Address();
-                        }
-                        else
+                        } else
                             System.out.println("Branch record update cancelled.");
                     }
 
@@ -157,4 +169,3 @@ public class single_branch_menu {
         this.single_branchID = single_branchID;
     }
 }
-

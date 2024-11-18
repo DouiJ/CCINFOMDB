@@ -5,7 +5,7 @@ import java.sql.*;
 public class ref_address_management {
 
     public String address_id;
-    public String unit_no;      // Can be NULL for branches, Not null for employees
+    public String unit_no; // Can be NULL for branches, Not null for employees
     public String street_no;
     public String barangay;
     public String city;
@@ -37,13 +37,14 @@ public class ref_address_management {
             while (rs.next())
                 maxAddressId = rs.getString(1);
 
-
             // Generate new address ID
             int addressIdNumber = Integer.parseInt(maxAddressId.substring(1)) + 1;
             address_id = "A" + String.format("%04d", addressIdNumber);
 
             // Insert new address
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Addresses (address_id, unit_no, street_no, barangay, city, province, region, zip_code) " + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "INSERT INTO Addresses (address_id, unit_no, street_no, barangay, city, province, region, zip_code) "
+                            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
             pstmt.setString(1, address_id);
             if (unit_no.isEmpty() || unit_no.equals("NULL"))
@@ -72,9 +73,11 @@ public class ref_address_management {
     public int update_Address() {
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+            conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
-            PreparedStatement pstmt = conn.prepareStatement("UPDATE Ref_address SET unit_no=?, street_no=?, barangay=?, city=?, province=?, region=?, zip_code=? WHERE address_id=?");
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "UPDATE Ref_address SET unit_no=?, street_no=?, barangay=?, city=?, province=?, region=?, zip_code=? WHERE address_id=?");
 
             if (unit_no.isEmpty() || unit_no.equals("NULL"))
                 pstmt.setNull(1, Types.VARCHAR);
@@ -102,7 +105,8 @@ public class ref_address_management {
     public int delete_Address() {
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+            conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Ref_address WHERE address_id=?");
 
@@ -124,7 +128,8 @@ public class ref_address_management {
 
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+            conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM Ref_address WHERE address_id=?");
             pstmt.setString(1, address_id);

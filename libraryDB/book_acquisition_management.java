@@ -12,7 +12,7 @@ public class book_acquisition_management {
     public String isbn;
     public String branch_delivered;
 
-    public book_acquisition_management(){
+    public book_acquisition_management() {
         this.acquisition_id = "";
         this.acquisition_date = "";
         this.acquisition_price = 0.0;
@@ -27,13 +27,12 @@ public class book_acquisition_management {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
-                "3d6%vQmT"
-        )) {
+                "3d6%vQmT")) {
             System.out.println("Connection to DB Successful.");
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("SELECT MAX(acquisition_id) FROM Book_Acquisitions");
 
-            //Get the highest id value
+            // Get the highest id value
             String maxAcquisitionID = "A000000000";
             if (resultSet.next()) {
                 maxAcquisitionID = resultSet.getString(1);
@@ -41,7 +40,8 @@ public class book_acquisition_management {
                     maxAcquisitionID = "A000000000";
             }
 
-            int aquisitionIDNumber = Integer.parseInt(maxAcquisitionID.substring(1)) + 1; //Extract the number part only and add 1
+            int aquisitionIDNumber = Integer.parseInt(maxAcquisitionID.substring(1)) + 1; // Extract the number part
+                                                                                          // only and add 1
             this.acquisition_id = "B" + String.format("%09d", aquisitionIDNumber);
 
             String sql = "INSERT INTO Book_Acquisitions (acquisition_id, acquisition_date, acquisition_price, supplier_name, copies_acquired, archivist_id, isbn, branch_delivered) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -51,7 +51,7 @@ public class book_acquisition_management {
             pstmt.setString(2, acquisition_date);
             pstmt.setDouble(3, acquisition_price);
             pstmt.setString(4, supplier_name);
-            pstmt.setInt   (5,(copies_acquired));
+            pstmt.setInt(5, (copies_acquired));
             pstmt.setString(6, archivist_id);
             pstmt.setString(7, isbn);
             pstmt.setString(8, branch_delivered);
@@ -77,8 +77,7 @@ public class book_acquisition_management {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
-                "3d6%vQmT"
-        )) {
+                "3d6%vQmT")) {
             System.out.println("Connection to DB Successful.");
 
             String sql = "UPDATE Book_Acquisitions SET acquisition_date=?, acquisition_price=?, supplier_name=?, copies_acquired=?, archivist_id=?, isbn=?, branch_delivered=? WHERE acquisition_id=?";
@@ -87,7 +86,7 @@ public class book_acquisition_management {
             pstmt.setString(1, acquisition_date);
             pstmt.setDouble(2, acquisition_price);
             pstmt.setString(3, supplier_name);
-            pstmt.setInt   (4,(copies_acquired));
+            pstmt.setInt(4, (copies_acquired));
             pstmt.setString(5, archivist_id);
             pstmt.setString(6, isbn);
             pstmt.setString(7, branch_delivered);
@@ -112,8 +111,7 @@ public class book_acquisition_management {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
-                "3d6%vQmT"
-        )) {
+                "3d6%vQmT")) {
             System.out.println("Connection to DB Successful.");
 
             String sql = "DELETE FROM Book_Acquisitions WHERE acquisition_id=?";
@@ -142,8 +140,7 @@ public class book_acquisition_management {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
-                "3d6%vQmT"
-        )) {
+                "3d6%vQmT")) {
             System.out.println("Connection to DB Successful.");
 
             String sql = "SELECT * FROM Book_Acquisitions  WHERE acquisition_id=?";
@@ -176,4 +173,3 @@ public class book_acquisition_management {
         }
     }
 }
-

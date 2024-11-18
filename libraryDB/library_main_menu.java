@@ -11,11 +11,11 @@ public class library_main_menu {
         int choice = 0;
         Scanner scanner = new Scanner(System.in);
 
-        // 1      Choose Branch (get branch arraylist from branch_management and present options)
-        // 2 - 6  (Core Record Management)
+        // 1 Choose Branch (get branch arraylist from branch_management and present
+        // options)
+        // 2 - 6 (Core Record Management)
         // 7 - 10 (Transactions Processing)
-        // 11     (Menu to generate reports)
-
+        // 11 (Menu to generate reports)
 
         while (true) {
             System.out.println("═══════════════════════════════════════════════════════════════");
@@ -41,11 +41,13 @@ public class library_main_menu {
             switch (choice) {
                 case 1:
                     single_branch_menu sb = new single_branch_menu();
-                    while (sb.sb_menu() != 0) {}
+                    while (sb.sb_menu() != 0) {
+                    }
                     break;
                 case 2:
                     employee_management_menu e = new employee_management_menu();
-                    while (e.employee_menu() != 0) {}
+                    while (e.employee_menu() != 0) {
+                    }
                     break;
                 case 3:
                     System.out.println("    ");

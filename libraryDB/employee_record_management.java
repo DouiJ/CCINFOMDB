@@ -35,7 +35,7 @@ public class employee_record_management {
 
 
     // Create a new Record
-    public String add_Employee() {
+    public int add_Employee() {
         try {
             Connection conn;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
@@ -71,10 +71,10 @@ public class employee_record_management {
 
             pstmt.close();
             conn.close();
-            return employee_id;
+            return 1;
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return null;
+            return 0;
         }
     }
 
