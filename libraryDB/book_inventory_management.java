@@ -1,5 +1,6 @@
 package libraryDB;
 
+import java.math.BigInteger;
 import java.sql.*;
 
 public class book_inventory_management {
@@ -29,8 +30,20 @@ public class book_inventory_management {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "pulvert05");
             System.out.println("Connection to DB Successful.");
 
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT MAX(inventory_id) FROM books_inventory");
+            
+            String maxID = "0";
+            while(rs.next())
+                maxID = rs.getString(1);
 
-            inventory_id = "0000000001";
+            if (maxID == null)
+            {
+                maxID = "0";
+            }
+            
+            long idnumber = Integer.parseInt(maxID) + 1;
+            inventory_id = String.format("%010d", idnumber);
 
             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO books_inventory (inventory_id, isbn, branch_id) VALUES (?, ?, ?)");
 
@@ -77,17 +90,17 @@ public class book_inventory_management {
         }
     }
 
-    // Update an Existing Record
     public int update_Book() {
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "pulvert05");
             System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("UPDATE Books_Inventory SET isbn=?, branch_id=? WHERE inventory_id=?");
 
             pstmt.setString(1, isbn);
-            pstmt.setString(2, branch_id);;
+            pstmt.setString(2, branch_id);
+            pstmt.setString(3, inventory_id);;
 
             pstmt.executeUpdate();
             System.out.println("Record was updated");
@@ -153,10 +166,10 @@ public class book_inventory_management {
     public int delete_Book() {
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "pulvert05");
             System.out.println("Connection to DB Successful.");
 
-            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Books_Inventory WHERE inventory_id=?");
+            PreparedStatement pstmt = conn.prepareStatement("DELETE FROM books_inventory WHERE inventory_id=?");
             pstmt.setString(1, inventory_id);
 
             pstmt.executeUpdate();
