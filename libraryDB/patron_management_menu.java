@@ -1,5 +1,6 @@
 package libraryDB;
 
+import java.sql.*;
 import java.util.Scanner;
 
 public class patron_management_menu {
@@ -13,7 +14,7 @@ public class patron_management_menu {
      */
     public patron_management_menu() {
         int choice = 0;
-        Scanner scanner = new Scanner(System.in);
+        Scanner sc = new Scanner(System.in);
 
         while (true) {
             System.out.println("═══════════════════════════════════════════════════════════════");
@@ -29,34 +30,57 @@ public class patron_management_menu {
             System.out.println("📌 Use numbers (0-4) to navigate the menu.");
 
             System.out.print("➡️  Enter your choice: ");
-            choice = scanner.nextInt();
+            choice = sc.nextInt();
 
             patron_management p = new patron_management();
 
             switch (choice) {
                 case 1: // create patron
-                    // Ask user input
-                    System.out.print("Enter patron informtion: ");
-                    // System.out.println("\nPatron ID : ");
-                    // TODO: search through the list and find the last number
-                    // split the string, add the letter to the front
+                    // ask for user input
+                    System.out.print("Enter patron information: ");
+                    System.out.println("\nPatron ID : [A] Generate ID [B] Manually Add ID");
+                    try {
+                        String cChoice = sc.nextLine().toUpperCase();
+
+                        // Option A: Generate ID
+                        if (cChoice.charAt(0) == 'A') {
+                            p.patron_id = patron_management.generatePatronId();
+
+                            // Option B: Manually Enter ID
+                        } else if (cChoice.charAt(0) == 'B') {
+                            System.out.print("Enter Patron ID (format: PXXXX): ");
+                            String inputId = sc.nextLine();
+                            if (inputId.matches("P\\d{4}")) { // makes sure the format typed is of PXXXX
+                                p.patron_id = inputId;
+                            } else {
+                                System.out.println("Invalid ID format. Please enter an ID in the format PXXXX.");
+                                break;
+                            }
+                        } else {
+                            System.out.println("Invalid choice. Please enter 'A' or 'B'.");
+                            break; // exit block if invalid
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Invalid input. Please try again.");
+                    }
+
                     System.out.println("Last name       : ");
                     try {
-                        p.last_name = scanner.nextLine();
+                        p.last_name = sc.nextLine();
                     } catch (IllegalArgumentException e) {
                         System.out.println("Invalid name entered. Please enter a valid string.");
                         break;
                     }
                     System.out.println("First name      : ");
                     try {
-                        p.first_name = scanner.nextLine();
+                        p.first_name = sc.nextLine();
                     } catch (IllegalArgumentException e) {
                         System.out.println("Invalid name entered. Please enter a valid string.");
                         break;
                     }
                     System.out.println("Age               : ");
                     try {
-                        p.age = Integer.parseInt(scanner.nextLine());
+                        p.age = Integer.parseInt(sc.nextLine());
                     } catch (IllegalArgumentException e) {
                         System.out.println("Invalid age entered. Please enter a postive whole number.");
                         break;
@@ -69,9 +93,9 @@ public class patron_management_menu {
                         break;
                     }
                     System.out.println("Phone Number      : ");
-                    p.phone_no = scanner.nextLine();
+                    p.phone_no = sc.nextLine();
                     System.out.println("Email             : ");
-                    p.email = scanner.nextLine();
+                    p.email = sc.nextLine();
 
                     if (p.add_patron() == 1) {
                         System.out.println("Patron record created successfully!");
@@ -97,28 +121,28 @@ public class patron_management_menu {
                     // split the string, add the letter to the front
                     System.out.println("Last name       : ");
                     try {
-                        p.last_name = scanner.nextLine();
+                        p.last_name = sc.nextLine();
                     } catch (IllegalArgumentException e) {
                         System.out.println("Invalid name entered. Please enter a valid string.");
                         break;
                     }
                     System.out.println("First name      : ");
                     try {
-                        p.first_name = scanner.nextLine();
+                        p.first_name = sc.nextLine();
                     } catch (IllegalArgumentException e) {
                         System.out.println("Invalid name entered. Please enter a valid string.");
                         break;
                     }
                     System.out.println("Age               : ");
                     try {
-                        p.age = Integer.parseInt(scanner.nextLine());
+                        p.age = Integer.parseInt(sc.nextLine());
                     } catch (IllegalArgumentException e) {
                         System.out.println("Invalid age entered. Please enter a postive whole number.");
                         break;
                     }
                     System.out.println("Gender            : ");
                     try {
-                        p.gender = patron_management.Gender.valueOf(scanner.nextLine().toUpperCase());
+                        p.gender = patron_management.Gender.valueOf(sc.nextLine().toUpperCase());
                     } catch (IllegalArgumentException e) {
                         System.out.println("Invalid gender entered. Please enter a valid gender.");
                         break;
@@ -130,7 +154,7 @@ public class patron_management_menu {
                     // logic to delete patrons
                     System.out.println("Enter patron information");
                     System.out.println("Patron ID       : ");
-                    p.patron_id = scanner.nextLine();
+                    p.patron_id = sc.nextLine();
 
                     p.delete_patron();
 
@@ -143,7 +167,7 @@ public class patron_management_menu {
                     break;
                 case 0:
                     // logic to exit patron menu
-                    scanner.close();
+                    sc.close();
                     break;
                 default:
                     System.out.println("⚠️ Invalid choice! Please select a valid option.");
