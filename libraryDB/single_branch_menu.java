@@ -52,12 +52,41 @@ public class single_branch_menu {
         System.out.println("-------------------------------------------------------------------");
     }
 
+    private void displayManagerInfo(employee_record_management e) {
+        System.out.println("Current Manager Information:  ");
+        System.out.println("-------------------------------------------------------------------");
+        System.out.println("Last Name         : "  + e.last_name);
+        System.out.println("First Name        : "  + e.first_name);
+        System.out.println("Job ID            : "  + e.job_id);
+        System.out.println("Age               : "  + e.age);
+        System.out.println("Phone No.         : "  + e.phone_no);
+        System.out.println("Email Address     : "  + e.email);
+        System.out.println("Hire Date         : "  + e.hire_date);
+        System.out.println("Address ID        : "  + e.address_id);
+        System.out.println("Branch ID         : "  + e.branch_id);
+        System.out.println("-------------------------------------------------------------------");
+    }
+
+    private void displayAddressInfo(ref_address_management a) {
+        System.out.println("Current Manager Information:  ");
+        System.out.println("-------------------------------------------------------------------");
+        System.out.println("Unit No.          : "  + a.unit_no);
+        System.out.println("Street No.        : "  + a.street_no);
+        System.out.println("Barangay          : "  + a.barangay);
+        System.out.println("City              : "  + a.city);
+        System.out.println("Province          : "  + a.province);
+        System.out.println("Region            : "  + a.region);
+        System.out.println("Zip Code          : "  + a.zip_code);
+        System.out.println("-------------------------------------------------------------------");
+    }
+
     public int menu() {
         int choice = 0;
         Scanner scanner = new Scanner(System.in);
         branch_management b = new branch_management();
         b.branch_id = single_branchID;
         ref_address_management a = new ref_address_management();
+        employee_record_management e = new employee_record_management();
 
 
         while (true) {
@@ -104,7 +133,14 @@ public class single_branch_menu {
                     scanner.close();
                     return 0;
                 case 3:
+                    b.get_Branch();
+                    e.employee_id = b.manager_id;
+                    e.get_Employee();
+                    a.address_id = b.address_id;
+                    a.get_Address();
                     displayBranchInfo(b);
+                    displayManagerInfo(e);
+                    displayAddressInfo(a);
                     break;
                 case 0:
                     System.out.println("Exiting Single Branch Management");

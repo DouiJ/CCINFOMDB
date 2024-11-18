@@ -203,7 +203,7 @@ public class branch_management {
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, branch_id);
-            pstmt.setString(1, manager_id)
+            pstmt.setString(1, manager_id);
             ResultSet resultSet = pstmt.executeQuery();
 
             while (resultSet.next()) {
