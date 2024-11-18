@@ -43,6 +43,15 @@ public class single_branch_menu {
         System.out.println("Zip Code         : "); a.zip_code         = Integer.parseInt(scanner.nextLine());
     }
 
+    private void displayBranchInfo(branch_management b) {
+        System.out.println("Current Branch Information:  ");
+        System.out.println("-------------------------------------------------------------------");
+        System.out.println("Manager ID        : "  + b.manager_id);
+        System.out.println("Address ID        : "  + b.address_id);
+        System.out.println("Phone No.         : "  + b.phone_no);
+        System.out.println("-------------------------------------------------------------------");
+    }
+
     public int menu() {
         int choice = 0;
         Scanner scanner = new Scanner(System.in);
@@ -56,12 +65,6 @@ public class single_branch_menu {
             System.out.println("═══════════════════════════════════════════════════════════════");
             System.out.println("                     📚 LIBRARY MANAGEMENT SYSTEM 📚           ");
             System.out.println("                         Command Line Menu                     ");
-            System.out.println("═══════════════════════════════════════════════════════════════");
-            System.out.println("Branch" + b.branch_id + "Information:  ");
-            System.out.println("═══════════════════════════════════════════════════════════════");
-            System.out.println("Manager ID        : "  + b.manager_id);
-            System.out.println("Address ID        : "  + b.address_id);
-            System.out.println("Phone No.         : "  + b.phone_no);
             System.out.println("═══════════════════════════════════════════════════════════════");
             System.out.printf("   %-2s ➤ %-40s%n", "[1]", "Update Branch Record");
             System.out.printf("   %-2s ➤ %-40s%n", "[2]", "Delete Branch Record");
@@ -89,12 +92,19 @@ public class single_branch_menu {
                         else
                             System.out.println("Branch record update cancelled.");
                     }
+
                     break;
                 case 2:
-                    System.out.println("    ");
-                    break;
+                    System.out.println("Do you want to to proceed with the deletion? (Y/N) ");
+                    if (scanner.nextLine().equalsIgnoreCase("Y"))
+                        b.delete_Branch();
+                    else
+                        System.out.println("Employee deletion cancelled.");
+                    System.out.println("Exiting Single Branch Management");
+                    scanner.close();
+                    return 0;
                 case 3:
-                    System.out.println("    ");
+                    displayBranchInfo(b);
                     break;
                 case 0:
                     System.out.println("Exiting Single Branch Management");
