@@ -2,6 +2,8 @@ package libraryDB;
 
 import java.util.Scanner;
 
+import static libraryDB.branch_menu.getCurrentBranchID;
+
 public class employee_management_menu {
 
     public employee_management_menu() {
@@ -93,6 +95,7 @@ public class employee_management_menu {
                         e.address_id = a.add_Address();
 
                         // Assign its Branch_ID to the current selected branch
+                        e.branch_id = getCurrentBranchID();
 
                         if (e.add_Employee() != null)
                             System.out.println("Employee record created successfully!");
@@ -114,12 +117,12 @@ public class employee_management_menu {
                             if (scanner.nextLine().equalsIgnoreCase("Y")) {
                                 e.update_Employee();
                                 a.update_Address();
+
+                                // Update for Branch
+                                // Get Branch List - Drop down - e.branch_id = "Chosen Branch"
                             }
                             else
                                 System.out.println("Employee update cancelled.");
-
-                            // Update for Branch
-                            // Get Branch List - Show from there
 
                         }
                         break;

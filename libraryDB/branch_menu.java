@@ -10,6 +10,10 @@ public class branch_menu {
     public branch_menu() {
     }
 
+    public static String getCurrentBranchID() {
+        return current_BranchID;
+    }
+
     private void displayBranches(ArrayList<String> branches){
         System.out.println("Current Branch Information:  ");
         System.out.println("-------------------------------------------------------------------");
