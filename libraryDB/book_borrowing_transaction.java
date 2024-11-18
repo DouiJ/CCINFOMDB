@@ -181,7 +181,6 @@ public class book_borrowing_transaction {
                 conn.close();
                 return 1;
             }
-
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return 0;
@@ -226,7 +225,6 @@ public class book_borrowing_transaction {
             pstmt.setString(3, fines_id);
             pstmt.setString(4, borrow_id);
             pstmt.executeUpdate();
-
             System.out.println("Return processed successfully.");
 
             conn.close();
@@ -257,8 +255,7 @@ public class book_borrowing_transaction {
             // Update borrowing record
             PreparedStatement updateBorrowing = conn.prepareStatement(
                     "UPDATE Borrowing_History SET date_borrowed = ?, date_due = ?, " +
-                            "borrow_status = ?, clerk_id = ? WHERE borrow_no = ?"
-            );
+                            "borrow_status = ?, clerk_id = ? WHERE borrow_no = ?");
 
             updateBorrowing.setDate(1, date_borrowed);
             updateBorrowing.setDate(2, date_due);
@@ -310,10 +307,9 @@ public class book_borrowing_transaction {
     }
 
     // Get borrowing details
-    public int getBorrowing() {
+    public int get_Borrowing() {
         try {
-            Connection conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
             PreparedStatement pstmt = conn.prepareStatement(
                     "SELECT * FROM Borrowing_History WHERE borrow_no = ?");

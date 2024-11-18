@@ -2,6 +2,10 @@ package libraryDB;
 
 import java.math.BigInteger;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import static libraryDB.branch_menu.getCurrentBranchID;
 
 public class book_inventory_management {
 
@@ -237,5 +241,29 @@ public class book_inventory_management {
             return 0;
         }
     }
+
+    // Return List of Books in Branch
+    public List<String> get_Books_In_Branch() {
+        List<String> bookList = new ArrayList<>();
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "3d6%vQmT");
+            System.out.println("Connection to DB Successful.");
+
+            PreparedStatement pstmt = conn.prepareStatement("SELECT inventory_id FROM books_inventory WHERE branch_id=?");
+            pstmt.setString(1, getCurrentBranchID()); // Use the current branch ID
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next())
+                bookList.add(rs.getString("inventory_id"));
+
+            pstmt.close();
+            conn.close();
+            return bookList;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+
 
 }
