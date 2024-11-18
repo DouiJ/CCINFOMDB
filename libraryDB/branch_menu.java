@@ -88,7 +88,7 @@ public class branch_menu {
                     inputEmployeeInfo(e);
                     inputAddressInfo(a);
                     e.address_id = a.add_Address();
-                    b.manager_id = e.add_Employee();
+                    b.manager_id = e.add_Employee(); // must set the job_id to J01
 
                     if (e.add_Employee() != null)
                         System.out.println("Employee record created successfully!");

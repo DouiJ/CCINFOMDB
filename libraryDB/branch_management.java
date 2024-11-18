@@ -108,7 +108,6 @@ public class branch_management {
             pstmt.setString(1, manager_id);
             pstmt.setString(2, address_id);
             pstmt.setString(3, phone_no);
-
             pstmt.setString(4, branch_id);
 
             pstmt.executeUpdate();

@@ -1,6 +1,11 @@
 package libraryDB;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import static libraryDB.branch_menu.getCurrentBranchID;
 
 public class employee_record_management {
 
@@ -37,10 +42,65 @@ public class employee_record_management {
 //                - View one Record
 //        - List Records using a Filter
 
+    public String getRandClerkID() {
+        try {
+            Connection conn;
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+
+            PreparedStatement pstmt = conn.prepareStatement("SELECT employee_id FROM Employees WHERE job_id='J02' AND branch_id=?");
+            pstmt.setString(1, getCurrentBranchID());
+            ResultSet rs = pstmt.executeQuery();
+
+            // Get the list of Clerks
+            List<String> clerkIDs = new ArrayList<>();
+            while (rs.next())
+                clerkIDs.add(rs.getString("employee_id"));
+
+            // Get Random ID from the Clerk List of Branch
+            Random rand = new Random();
+            int randomIndex = rand.nextInt(clerkIDs.size());
+            String randomClerkID = clerkIDs.get(randomIndex);
+
+            pstmt.close();
+            conn.close();
+            return randomClerkID;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public String getRandArchivistID() {
+            try {
+                Connection conn;
+                conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+
+                PreparedStatement pstmt = conn.prepareStatement("SELECT employee_id FROM Employees WHERE job_id='J03' AND branch_id=?");
+                pstmt.setString(1, getCurrentBranchID());
+                ResultSet rs = pstmt.executeQuery();
+
+                // Get the list of Clerks
+                List<String> archivistIDs = new ArrayList<>();
+                while (rs.next())
+                    archivistIDs.add(rs.getString("employee_id"));
+
+                // Get Random ID from the Archivist List of Branch
+                Random rand = new Random();
+                int randomIndex = rand.nextInt(archivistIDs.size());
+                String randomArchivistID = archivistIDs.get(randomIndex);
+
+                pstmt.close();
+                conn.close();
+                return randomArchivistID;
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                return null;
+            }
+        }
+
     // Create a new Record
     public String add_Employee() {
         try {
-
             Connection conn;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
@@ -62,7 +122,7 @@ public class employee_record_management {
             pstmt.setString(1, employee_id);        // Automated, starts at "E0001" parse to add 1 per record
             pstmt.setString(2, last_name);
             pstmt.setString(3, first_name);
-            pstmt.setInt(4, job_id);                // User assigns role (1 - 4)
+            pstmt.setInt(4, job_id);
             pstmt.setInt(5, age);
             pstmt.setString(6, phone_no);
             pstmt.setString(7, email);
@@ -167,14 +227,6 @@ public class employee_record_management {
             System.out.println(e.getMessage());
             return 0;
         }
-    }
-
-    public String getClerkID() {
-
-    }
-
-    public String getArchivistID() {
-
     }
 
 }
