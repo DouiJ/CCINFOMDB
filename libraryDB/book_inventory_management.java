@@ -27,7 +27,7 @@ public class book_inventory_management {
     public int add_Book() {
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "pulvert05");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "3d6%vQmT");
             System.out.println("Connection to DB Successful.");
 
             Statement stmt = conn.createStatement();
@@ -66,7 +66,7 @@ public class book_inventory_management {
     public int add_ISBN() {
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "pulvert05");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "3d6%vQmT");
             System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("INSERT INTO book_details (isbn, title, genre, price, author_last_name, author_first_name) VALUES (?, ?, ?, ?, ?, ?)");
@@ -93,7 +93,7 @@ public class book_inventory_management {
     public int update_Book() {
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "pulvert05");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "3d6%vQmT");
             System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("UPDATE Books_Inventory SET isbn=?, branch_id=? WHERE inventory_id=?");
@@ -117,7 +117,7 @@ public class book_inventory_management {
     public int update_ISBN() {
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "pulvert05");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "3d6%vQmT");
             System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("UPDATE Book_Details SET title=?, genre=?, price=?, author_last_name=?, author_first_name=? WHERE isbn=?");
@@ -144,7 +144,7 @@ public class book_inventory_management {
     public int delete_ISBN() {
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "pulvert05");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "3d6%vQmT");
             System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM book_details WHERE isbn=?");
@@ -166,7 +166,7 @@ public class book_inventory_management {
     public int delete_Book() {
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "pulvert05");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "3d6%vQmT");
             System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM books_inventory WHERE inventory_id=?");
@@ -189,7 +189,7 @@ public class book_inventory_management {
 
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "pulvert05");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "3d6%vQmT");
             System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM book_details WHERE isbn=?");
@@ -218,7 +218,7 @@ public class book_inventory_management {
 
         try {
             Connection conn;
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library", "root", "3d6%vQmT");
             System.out.println("Connection to DB Successful.");
 
             PreparedStatement pstmt = conn.prepareStatement("SELECT * FROM Books_Inventory WHERE inventory_id=?");
