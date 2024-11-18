@@ -94,7 +94,7 @@ public class branch_management {
         }
     }
 
-    public int update_Branch(String edit_branch) {
+    public int update_Branch() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -102,15 +102,14 @@ public class branch_management {
         )) {
             System.out.println("Connection to DB Successful.");
 
-            String sql = "UPDATE Branches SET branch_id=?, manager_id=?, address_id=?, phone_no=? WHERE branch_id=?";
+            String sql = "UPDATE Branches SET manager_id=?, address_id=?, phone_no=? WHERE branch_id=?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
-            pstmt.setString(1, branch_id);
-            pstmt.setString(2, manager_id);
-            pstmt.setString(3, address_id);
-            pstmt.setString(4, phone_no);
+            pstmt.setString(1, manager_id);
+            pstmt.setString(2, address_id);
+            pstmt.setString(3, phone_no);
 
-            pstmt.setString(5, edit_branch);
+            pstmt.setString(4, branch_id);
 
             pstmt.executeUpdate();
             System.out.println("Record was updated");
@@ -118,8 +117,11 @@ public class branch_management {
             pstmt.close();
             connection.close();
             return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
@@ -143,8 +145,11 @@ public class branch_management {
             pstmt.close();
             connection.close();
             return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
@@ -175,8 +180,46 @@ public class branch_management {
             pstmt.close();
             connection.close();
             return recordcount;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    public int get_Branch_Manager() {
+        int recordcount = 0;
+
+        try (Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://127.0.0.1:3306/library",
+                "root",
+                "3d6%vQmT"
+        )) {
+            System.out.println("Connection to DB Successful.");
+
+            String sql = "SELECT * FROM Branches WHERE branch_id=? && manager_id=?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+
+            pstmt.setString(1, branch_id);
+            pstmt.setString(1, manager_id)
+            ResultSet resultSet = pstmt.executeQuery();
+
+            while (resultSet.next()) {
+                address_id = resultSet.getString("address_id");
+                phone_no = resultSet.getString("phone_no");
+                recordcount++;
+            }
+
+            pstmt.close();
+            connection.close();
+            return recordcount;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }

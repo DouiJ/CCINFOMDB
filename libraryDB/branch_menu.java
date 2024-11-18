@@ -17,24 +17,6 @@ public class branch_menu {
         System.out.println("-------------------------------------------------------------------");
     }
 
-    private void displayBranchInfo(branch_management b) {
-        System.out.println("Current Branch Information:  ");
-        System.out.println("-------------------------------------------------------------------");
-        System.out.println("Manager ID        : "  + b.manager_id);
-        System.out.println("Address ID        : "  + b.address_id);
-        System.out.println("Phone No.         : "  + b.phone_no);
-        System.out.println("-------------------------------------------------------------------");
-    }
-
-    private String inputChooseBranch(ArrayList<String> branches){
-        Scanner scanner = new Scanner(System.in);
-        String branchID;
-        System.out.print("Choose: ");
-        scanner.nextLine();
-        System.out.println("\nBranch ID        : "); branchID = scanner.nextLine();
-        return branchID;
-    }
-
     private void inputBranchInfo(branch_management b) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter branch information: ");
@@ -55,24 +37,11 @@ public class branch_menu {
         System.out.println("Email Address     : "); e.email = scanner.nextLine();
     }
 
-    private void inputEmployeeAddressInfo(ref_address_management a) {
+    private void inputAddressInfo(ref_address_management a) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("\n Enter Employee Address Information: (Type NULL if N/A)");
         scanner.nextLine();
         System.out.println("Unit No.         : "); a.unit_no        = scanner.nextLine();
-        System.out.println("Street No.       : "); a.street_no       = scanner.nextLine();
-        System.out.println("Barangay         : "); a.barangay        = scanner.nextLine();
-        System.out.println("City             : "); a.city           = scanner.nextLine();
-        System.out.println("Province         : "); a.province       = scanner.nextLine();
-        System.out.println("Region           : "); a.region          = scanner.nextLine();
-        System.out.println("Zip Code         : "); a.zip_code         = Integer.parseInt(scanner.nextLine());
-    }
-
-    private void inputBranchAddressInfo(ref_address_management a) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("\n Enter Branch Address Information: (Type NULL if N/A)");
-        scanner.nextLine();
-        a.unit_no = "NULL";
         System.out.println("Street No.       : "); a.street_no       = scanner.nextLine();
         System.out.println("Barangay         : "); a.barangay        = scanner.nextLine();
         System.out.println("City             : "); a.city           = scanner.nextLine();
@@ -85,8 +54,8 @@ public class branch_menu {
         Scanner scanner = new Scanner(System.in);
         branch_management b = new branch_management();
         employee_record_management e = new employee_record_management();
-        ref_address_management aE = new ref_address_management();
-        ref_address_management aB = new ref_address_management();
+        ref_address_management a = new ref_address_management();
+        single_branch_menu sb = new single_branch_menu();
 
         while (true) {
             System.out.println("═══════════════════════════════════════════════════════════════");
@@ -102,7 +71,6 @@ public class branch_menu {
             System.out.printf("   %-2s ➤ %-40s%n", "[0]", "Exit");
             System.out.println("═══════════════════════════════════════════════════════════════");
             System.out.println("📌 Use numbers (0-5) to navigate the menu.");
-
             System.out.print("➡️  Enter your choice: ");
             choice = scanner.nextInt();
 
@@ -113,8 +81,8 @@ public class branch_menu {
 
                     //Create Manager
                     inputEmployeeInfo(e);
-                    inputEmployeeAddressInfo(aE);
-                    e.address_id = aE.add_Address();
+                    inputAddressInfo(a);
+                    e.address_id = a.add_Address();
                     b.manager_id = e.add_Employee();
 
                     if (e.add_Employee() != null)
@@ -124,8 +92,8 @@ public class branch_menu {
                         break;
                     }
                     //Create Branch Address
-                    inputBranchAddressInfo(aB);
-                    b.address_id = aB.add_Address();
+                    inputAddressInfo(a);
+                    b.address_id = a.add_Address();
 
                     if (b.add_Branch() != null)
                         System.out.println("Branch record created successfully!");
@@ -136,20 +104,15 @@ public class branch_menu {
                 case 2:
                     ArrayList<String> branches = b.get_Branches();
                     displayBranches(branches);
-                    boolean exist = false;
 
-                    String editBranchID = inputChooseBranch(branches);
-                    for (String branch : branches){
-                        if (editBranchID == branch){
-                            exist = true;
-                            break;
-                        }
-                    }
+                    System.out.println("Enter Branch ID to be updated: ");
+                    System.out.println("Branch ID        : "); b.branch_id = scanner.nextLine();
 
-                    if (exist){
-                        //Go to another class to edit the chosen branch
+                    if (b.get_Branch() == 0){
+                        System.out.println("Branch record not found. Please input a proper ID.");
                     }else {
-                        System.out.println("Branch does not exist");
+                        sb.setSingle_branchID(b.branch_id);
+                        sb.menu();
                     }
                     break;
                 case 3:
