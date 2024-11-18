@@ -2,7 +2,7 @@ package libraryDB;
 
 import java.sql.*;
 
-public class book_aquisition_management {
+public class book_acquisition_management {
     public String acquisition_id;
     public String acquisition_date;
     public double acquisition_price;
@@ -12,7 +12,7 @@ public class book_aquisition_management {
     public String isbn;
     public String branch_delivered;
 
-    public book_aquisition_management(){
+    public book_acquisition_management(){
         this.acquisition_id = "";
         this.acquisition_date = "";
         this.acquisition_price = 0.0;
@@ -23,7 +23,7 @@ public class book_aquisition_management {
         this.branch_delivered = "";
     }
 
-    public String add_book_aquisition(){
+    public String add_book_acquisition(){
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -49,7 +49,7 @@ public class book_aquisition_management {
 
             pstmt.setString(1, acquisition_id);
             pstmt.setString(2, acquisition_date);
-            pstmt.setString(3, acquisition_price);
+            pstmt.setString(3, parse);
             pstmt.setString(4, supplier_name);
             pstmt.setString(5, copies_acquired);
             pstmt.setString(6, archivist_id);
@@ -73,3 +73,4 @@ public class book_aquisition_management {
     }
 
 }
+
