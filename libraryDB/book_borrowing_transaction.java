@@ -1,4 +1,5 @@
 package libraryDB;
+
 import java.sql.*;
 import java.time.LocalDate;
 
@@ -36,18 +37,58 @@ public class book_borrowing_transaction {
         clerk_id = "";
     }
 
-    // Check if patron can borrow books
-    public boolean canPatronBorrow() {
+    private boolean check_ClerkIDValidity() {
         try {
-            Connection conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT"
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "SELECT 1 FROM Employees WHERE employee_id = ?");
+            pstmt.setString(1, clerk_id);
+            ResultSet rs = pstmt.executeQuery();
+
+            boolean isValid = rs.next(); // Returns true if clerk exists
+
+            pstmt.close();
+            conn.close();
+
+            return isValid;
+        } catch (Exception e) {
+            System.out.println("Clerk ID validation error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean check_PatronIDValidity() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "SELECT 1 FROM Patrons WHERE patron_id = ?"
             );
+            pstmt.setString(1, patron_id);
+            ResultSet rs = pstmt.executeQuery();
+
+            boolean isValid = rs.next(); // Returns true if patron exists
+
+            pstmt.close();
+            conn.close();
+
+            return isValid;
+        } catch (Exception e) {
+            System.out.println("Patron ID validation error: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // Check if patron can borrow books
+    private boolean canPatronBorrow() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
             // Check current borrows count and overdue status
             PreparedStatement pstmt = conn.prepareStatement(
                     "SELECT COUNT(*) as borrow_count FROM Borrowing_History " +
-                            "WHERE patron_id = ? AND borrow_status IN ('B', 'O')"
-            );
+                            "WHERE patron_id = ? AND borrow_status IN ('B', 'O')");
             pstmt.setString(1, patron_id);   // Require specific patron_id from user
             ResultSet rs = pstmt.executeQuery();
 
@@ -58,8 +99,7 @@ public class book_borrowing_transaction {
             // Check for overdue or lost books
             pstmt = conn.prepareStatement(
                     "SELECT COUNT(*) as overdue_count FROM Borrowing_History " +
-                            "WHERE patron_id = ? AND borrow_status IN ('O', 'L')"
-            );
+                            "WHERE patron_id = ? AND borrow_status IN ('O', 'L')");
             pstmt.setString(1, patron_id);
             rs = pstmt.executeQuery();
 
@@ -79,68 +119,69 @@ public class book_borrowing_transaction {
 
     public int create_Borrowing() {
         try {
-            if (!canPatronBorrow()) {
-                System.out.println("Patron cannot borrow more books or has overdue items");
+            if (!check_PatronIDValidity() && !check_ClerkIDValidity()) {
+                System.out.println("Invalid Patron ID or Clerk ID");
                 return 0;
-            }
-            Connection conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+            } else {
+                if (!canPatronBorrow()) {
+                    System.out.println("Patron cannot borrow more books or has overdue items");
+                    return 0;
+                }
+                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
-            // Check if book is available  -- User Input the BOOK_ID or Inventory_id -- Show the list for inventory of specific branch in menu
-            PreparedStatement checkBook = conn.prepareStatement(
+                // Check if book is available
+                PreparedStatement checkBook = conn.prepareStatement(
                         "SELECT 1 FROM Books_Inventory bi " +
-                            "WHERE bi.inventory_id = ? " +
-                            "AND NOT EXISTS (SELECT 1 FROM Borrowing_History bh " +
-                            "              WHERE bh.book_id = bi.inventory_id " +
-                            "              AND bh.borrow_status IN ('B', 'O'))"
-            );
-            checkBook.setString(1, book_id);
-            ResultSet rs = checkBook.executeQuery();
+                                "WHERE bi.inventory_id = ? " +
+                                "AND NOT EXISTS (SELECT 1 FROM Borrowing_History bh " +
+                                "              WHERE bh.book_id = bi.inventory_id " +
+                                "              AND bh.borrow_status IN ('B', 'O'))");
+                checkBook.setString(1, book_id);
+                ResultSet rs = checkBook.executeQuery();
 
-            // If result from query is empty.
-            if (!rs.next()) {
-                System.out.println("Book is not available for borrowing");
-                return 0;
+                // If result from query is empty.
+                if (!rs.next()) {
+                    System.out.println("Book is not available for borrowing");
+                    return 0;
+                }
+
+                // Generate new borrow id
+                Statement stmt = conn.createStatement();
+                rs = stmt.executeQuery("SELECT MAX(borrow_id) FROM Borrowing_History");
+
+                String maxBorrowNo = "BRW0000";
+                if (rs.next())
+                    maxBorrowNo = rs.getString(1);
+
+                int borrowNoNumber = Integer.parseInt(maxBorrowNo.substring(3)) + 1;
+                borrow_id = "BRW" + String.format("%04d", borrowNoNumber);
+
+                // Insert borrowing record
+                PreparedStatement pstmt = conn.prepareStatement(
+                        "INSERT INTO Borrowing_History (borrow_id, date_borrowed, date_due, " +
+                                "borrow_status, book_id, patron_id, clerk_id) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+                // Set current date and due date (14 days from now)
+                LocalDate currentDate = LocalDate.now();
+                LocalDate dueDate = currentDate.plusDays(14);
+
+                pstmt.setString(1, borrow_id);
+                pstmt.setDate(2, Date.valueOf(currentDate));
+                pstmt.setDate(3, Date.valueOf(dueDate));
+                pstmt.setString(4, "B");
+                pstmt.setString(5, book_id);
+                pstmt.setString(6, patron_id);
+                pstmt.setString(7, clerk_id);
+
+                pstmt.executeUpdate();
+                System.out.println("Borrowing transaction created successfully");
+
+                pstmt.close();
+                conn.close();
+                return 1;
             }
 
-            // Generate new borrow number
-            Statement stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT MAX(borrow_id) FROM Borrowing_History");
-
-            String maxBorrowNo = "BRW0000";
-            if (rs.next())
-                maxBorrowNo = rs.getString(1);
-
-            int borrowNoNumber = Integer.parseInt(maxBorrowNo.substring(3)) + 1;
-            borrow_id = "BRW" + String.format("%04d", borrowNoNumber);
-
-            // Insert borrowing record
-            PreparedStatement pstmt = conn.prepareStatement(
-                    "INSERT INTO Borrowing_History (borrow_id, date_borrowed, date_due, " +
-                            "borrow_status, book_id, patron_id, clerk_id) " +
-                            "VALUES (?, ?, ?, ?, ?, ?, ?)"
-            );
-
-            // Set current date and due date (14 days from now)
-            LocalDate currentDate = LocalDate.now();
-            LocalDate dueDate = currentDate.plusDays(14);
-
-            pstmt.setString(1, borrow_id);
-            pstmt.setDate(2, Date.valueOf(currentDate));
-            pstmt.setDate(3, Date.valueOf(dueDate));
-            pstmt.setString(4, "B");
-            pstmt.setString(5, book_id);
-            pstmt.setString(6, patron_id);
-            pstmt.setString(7, clerk_id);
-
-            // USER INPUT FOR THEIR ID, AND CLERK_ID
-
-            pstmt.executeUpdate();
-            System.out.println("Borrowing transaction created successfully");
-
-            pstmt.close();
-            conn.close();
-            return 1;
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return 0;
@@ -170,7 +211,7 @@ public class book_borrowing_transaction {
             long daysOverdue = currentDate.toEpochDay() - dueDate.toLocalDate().toEpochDay();
 
             if (daysOverdue > 0) {
-               // Create a Fines record, use fine function
+                // Create a Fines record, use fine function
                 // MUST RETURN A FINES_ID -- Null if not overdue
             } else
                 fines_id = null; // No fines if not overdue
@@ -196,15 +237,59 @@ public class book_borrowing_transaction {
         }
     }
 
-    // Cancel a borrowing transaction (only if not yet returned)
-    public int cancelBorrowing() {
+    // Update an existing borrowing record
+    public int update_Borrowing() {
         try {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
+            // Check if borrowing record exists
+            PreparedStatement checkBorrowing = conn.prepareStatement(
+                    "SELECT 1 FROM Borrowing_History WHERE borrow_no = ?");
+            checkBorrowing.setString(1, borrow_id);
+            ResultSet rs = checkBorrowing.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("Borrowing record not found");
+                return 0;
+            }
+
+            // Update borrowing record
+            PreparedStatement updateBorrowing = conn.prepareStatement(
+                    "UPDATE Borrowing_History SET date_borrowed = ?, date_due = ?, " +
+                            "borrow_status = ?, clerk_id = ? WHERE borrow_no = ?"
+            );
+
+            updateBorrowing.setDate(1, date_borrowed);
+            updateBorrowing.setDate(2, date_due);
+            updateBorrowing.setString(3, borrow_status);
+            updateBorrowing.setString(4, clerk_id);
+            updateBorrowing.setString(5, borrow_id);
+
+            int rowsAffected = updateBorrowing.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Borrowing record updated successfully");
+                return 1;
+            } else {
+                System.out.println("Failed to update borrowing record");
+                return 0;
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return 0;
+        }
+    }
+
+
+    // Delete a borrowing transaction
+    public int delete_Borrowing() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+
             PreparedStatement pstmt = conn.prepareStatement(
                     "DELETE FROM Borrowing_History " +
-                            "WHERE borrow_no = ? AND borrow_status = 'B'");
+                            "WHERE borrow_id = ?");
             pstmt.setString(1, borrow_id);
             int rowsAffected = pstmt.executeUpdate();
 
@@ -259,11 +344,6 @@ public class book_borrowing_transaction {
             return 0;
         }
     }
-
-
-    // Delete Record
-
-
 
 
 }
