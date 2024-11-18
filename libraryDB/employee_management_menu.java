@@ -7,7 +7,7 @@ public class employee_management_menu {
     public employee_management_menu() {
     }
 
-    private void displayEmployeeInfo(employee_record_management e) {
+    private void displayEmployeeInfo(employee_record_management e, ref_address_management a) {
         System.out.println("Current Employee Information:  ");
         System.out.println("-------------------------------------------------------------------");
         System.out.println("Last Name         : "  + e.last_name);
@@ -19,6 +19,16 @@ public class employee_management_menu {
         System.out.println("Hire Date         : "  + e.hire_date);
         System.out.println("Address ID        : "  + e.address_id);
         System.out.println("Branch ID         : "  + e.branch_id);
+        System.out.println("-------------------------------------------------------------------");
+        System.out.println("Current Address Information:   ");
+        System.out.println("-------------------------------------------------------------------");
+        System.out.println("Unit No.         : "  + a.unit_no);
+        System.out.println("Street No.       : "  + a.street_no);
+        System.out.println("Barangay         : "  + a.barangay);
+        System.out.println("City             : "  + a.city);
+        System.out.println("Province         : "  + a.province);
+        System.out.println("Region           : "  + a.region);
+        System.out.println("Zip Code         : "  + a.zip_code);
         System.out.println("-------------------------------------------------------------------");
     }
 
@@ -45,6 +55,12 @@ public class employee_management_menu {
         System.out.println("Province         : "); a.province       = scanner.nextLine();
         System.out.println("Region           : "); a.region          = scanner.nextLine();
         System.out.println("Zip Code         : "); a.zip_code         = Integer.parseInt(scanner.nextLine());
+    }
+
+    private void inputEmployeeID(employee_record_management e) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter Employee ID to be updated: ");
+        System.out.println("Employee ID        : "); e.employee_id = scanner.nextLine();
     }
 
     public int employee_menu() {
@@ -85,13 +101,11 @@ public class employee_management_menu {
                         break;
                     case 2:
                         // Update an employee record
-                        System.out.println("Enter Employee ID to be updated: ");
-                        System.out.println("Employee ID        : "); e.employee_id = scanner.nextLine();
-
+                        inputEmployeeID(e);
                         if (e.get_Employee() == 0)
                             System.out.println("Employee record not found. Please input a proper ID.");
                         else {
-                            displayEmployeeInfo(e);
+                            displayEmployeeInfo(e, a);
 
                             inputEmployeeInfo(e);
                             inputAddressInfo(a);
@@ -110,9 +124,7 @@ public class employee_management_menu {
                         }
                         break;
                     case 3:
-                        System.out.println("Enter Employee ID to be updated: ");
-                        System.out.println("Employee ID        : "); e.employee_id = scanner.nextLine();
-
+                        inputEmployeeID(e);
                         if (e.get_Employee() == 0)
                             System.out.println("Employee record not found. Please input a proper ID.");
                         else {
@@ -131,7 +143,7 @@ public class employee_management_menu {
                         if (e.get_Employee() == 0)
                             System.out.println("Employee record not found. Please input a proper ID.");
                         else
-                            displayEmployeeInfo(e);
+                            displayEmployeeInfo(e, a);
                         break;
                     case 0:
                         System.out.println("Exiting Employee Record Management.");

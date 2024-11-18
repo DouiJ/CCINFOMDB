@@ -80,7 +80,7 @@ public class single_branch_menu {
         System.out.println("-------------------------------------------------------------------");
     }
 
-    public int menu() {
+    public int sb_menu() {
         int choice = 0;
         Scanner scanner = new Scanner(System.in);
         branch_management b = new branch_management();
@@ -97,7 +97,7 @@ public class single_branch_menu {
             System.out.println("═══════════════════════════════════════════════════════════════");
             System.out.printf("   %-2s ➤ %-40s%n", "[1]", "Update Branch Record");
             System.out.printf("   %-2s ➤ %-40s%n", "[2]", "Delete Branch Record");
-            System.out.printf("   %-2s ➤ %-40s%n", "[3]", "View an Employee Record");
+            System.out.printf("   %-2s ➤ %-40s%n", "[3]", "View a Branch Record");
             System.out.printf("   %-2s ➤ %-40s%n", "[0]", "Exit");
             System.out.println("═══════════════════════════════════════════════════════════════");
             System.out.println("📌 Use numbers (0-3) to navigate the menu\n");

@@ -5,6 +5,8 @@ import java.util.Scanner;
 
 public class branch_menu {
 
+    public static String current_BranchID;
+
     public branch_menu() {
     }
 
@@ -55,7 +57,6 @@ public class branch_menu {
         branch_management b = new branch_management();
         employee_record_management e = new employee_record_management();
         ref_address_management a = new ref_address_management();
-        single_branch_menu sb = new single_branch_menu();
 
         while (true) {
             System.out.println("═══════════════════════════════════════════════════════════════");
@@ -108,11 +109,11 @@ public class branch_menu {
                     System.out.println("Enter Branch ID to be updated: ");
                     System.out.println("Branch ID        : "); b.branch_id = scanner.nextLine();
 
-                    if (b.get_Branch() == 0){
+                    if (b.get_Branch() == 0) {
                         System.out.println("Branch record not found. Please input a proper ID.");
-                    }else {
-                        sb.setSingle_branchID(b.branch_id);
-                        sb.menu();
+                    } else {
+                        current_BranchID = b.branch_id;
+
                     }
                     break;
                 case 3:
