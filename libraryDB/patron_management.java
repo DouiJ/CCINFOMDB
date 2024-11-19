@@ -27,16 +27,31 @@ public class patron_management {
         email = "";
     }
 
+    // generates the lowest vacant patron_id
+    public static String generatePatronId() {
+        String query = "SELECT patron_id FROM patrons ORDER BY patron_id ASC";
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/libraryDB", "username",
+                "password");
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(query)) {
+            int expectedId = 1;
+            while (rs.next()) {
+                String currentId = rs.getString("patron_id");
+                int currentIdNumber = Integer.parseInt(currentId.substring(1));
+                if (currentIdNumber != expectedId) {
+                    break;
+                }
+                expectedId++;
+            }
+            return "P" + String.format("%04d", expectedId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public int add_patron() {
         try {
-            /*
-             * Common Algorithm when interacting with databases
-             * 1. Connect to the MySQL Database
-             * 2. Preparing your SQL Statement
-             * 3. Close your SQL Statement
-             * 4. Close your Connection to the MySQL Database
-             */
-
             // Connect to the MySQL Database
             Connection conn;
             conn = DriverManager.getConnection(
@@ -67,14 +82,6 @@ public class patron_management {
 
     public int update_patron() {
         try {
-            /*
-             * Common Algorithm when interacting with databases
-             * 1. Connect to the MySQL Database
-             * 2. Preparing your SQL Statement
-             * 3. Close your SQL Statement
-             * 4. Close your Connection to the MySQL Database
-             */
-
             // Connect to the MySQL Database
             Connection conn;
             conn = DriverManager.getConnection(
@@ -129,14 +136,6 @@ public class patron_management {
 
     public int get_patron() {
         try {
-            /*
-             * Common Algorithm when interacting with databases
-             * 1. Connect to the MySQL Database
-             * 2. Preparing your SQL Statement
-             * 3. Close your SQL Statement
-             * 4. Close your Connection to the MySQL Database
-             */
-
             // Connect to the MySQL Database
             Connection conn;
             conn = DriverManager.getConnection(
