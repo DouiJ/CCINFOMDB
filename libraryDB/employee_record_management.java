@@ -9,30 +9,109 @@ import static libraryDB.branch_menu.getCurrentBranchID;
 
 public class employee_record_management {
 
-    public String employee_id;  // VARCHAR(10)
-    public String last_name;    // VARCHAR(45)
-    public String first_name;   // VARCHAR(45)
-    public int job_id;          // Parse int since VARCHAR(1)
-    public int age;             // INT
-    public String phone_no;     // VARCHAR(13)
-    public String email;        // VARCHAR(45)
-    public Date hire_date;      // DATE
-    public String address_id;   // VARCHAR(10)
-    public String branch_id;    // VARCHAR(10)
+    private String employee_id;  // VARCHAR(10)
+    private String last_name;    // VARCHAR(45)
+    private String first_name;   // VARCHAR(45)
+    private int age;             // TINYINT
+    private String phone_no;     // VARCHAR(13)
+    private String email;        // VARCHAR(45)
+    private String job_id;         // ENUM (1 CHAR)
+    private Date hire_date;      // DATE
+    private String full_address; // VARCHAR(100)
+    private String branch_id;    // VARCHAR(10)
 
     public employee_record_management() {
         employee_id = "";
         last_name = "";
         first_name = "";
-        job_id = 0;
         age = 0;
         phone_no = "";
         email = "";
         hire_date = null;
-        address_id = "";
-        branch_id = "";
+        full_address = "";
+        //branch_id  // Set to current selected branch ID
     }
 
+
+    public String getEmployeeId() {
+        return employee_id;
+    }
+
+    public void setEmployeeId(String employee_id) {
+        this.employee_id = employee_id;
+    }
+
+    public String getLast_name() {
+        return last_name;
+    }
+
+    public void setLast_name(String last_name) {
+        this.last_name = last_name;
+    }
+
+    public String getFirst_name() {
+        return first_name;
+    }
+
+    public void setFirst_name(String first_name) {
+        this.first_name = first_name;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public String getPhone_no() {
+        return phone_no;
+    }
+
+    public void setPhone_no(String phone_no) {
+        this.phone_no = phone_no;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getJob_id() {
+        return job_id;
+    }
+
+    public void setJob_id(String job_id) {
+        this.job_id = job_id;
+    }
+
+    public Date getHire_date() {
+        return hire_date;
+    }
+
+    public void setHire_date(Date hire_date) {
+        this.hire_date = hire_date;
+    }
+
+    public String getFull_address() {
+        return full_address;
+    }
+
+    public void setFull_address(String full_address) {
+        this.full_address = full_address;
+    }
+
+    public String getBranch_id() {
+        return branch_id;
+    }
+
+    public void setBranch_id(String branch_id) {
+        this.branch_id = branch_id;
+    }
 
     // Create a new Record
     public int add_Employee() {
@@ -53,18 +132,19 @@ public class employee_record_management {
             String employee_id = "E" + String.format("%04d", employeeIdNumber);
 
             // Inserting new record
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Employees (employee_id, last_name, first_name, job_id, age, phone_no, email, hire_date, address_id, branch_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Employees (employee_id, last_name, first_name, job_id, age, phone_no, email, hire_date, full_address, branch_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-            pstmt.setString(1, employee_id);        // Automated, starts at "E0001" parse to add 1 per record
+            pstmt.setString(1, employee_id);
             pstmt.setString(2, last_name);
             pstmt.setString(3, first_name);
-            pstmt.setInt(4, job_id);
+            pstmt.setString(4, job_id);
             pstmt.setInt(5, age);
             pstmt.setString(6, phone_no);
             pstmt.setString(7, email);
             pstmt.setDate(8, hire_date);
-            pstmt.setString(9, address_id);         // Creates record for branch id, get current max + 1 and that would be the id
-            pstmt.setString(10, branch_id);         // Implement a search for branch_id to guide user input
+            pstmt.setString(9, full_address);
+
+            // Curr Branch INDEX 10
 
             pstmt.executeUpdate();
             System.out.println("Record was created");
@@ -72,8 +152,11 @@ public class employee_record_management {
             pstmt.close();
             conn.close();
             return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
@@ -84,17 +167,17 @@ public class employee_record_management {
             Connection conn;
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
-            PreparedStatement pstmt = conn.prepareStatement("UPDATE Employees SET last_name=?, first_name=?, job_id=?, age=?, phone_no=?, email=?, hire_date=?, address_id=?, branch_id=? WHERE employee_id=?");
+            PreparedStatement pstmt = conn.prepareStatement("UPDATE Employees SET last_name=?, first_name=?, age=?, phone_no=?, email=?, job_id=?, hire_date=?, full_address=?, branch_id=? WHERE employee_id=?");
 
             pstmt.setString(1, last_name);
             pstmt.setString(2, first_name);
-            pstmt.setInt(3, job_id);
-            pstmt.setInt(4, age);
-            pstmt.setString(5, phone_no);
-            pstmt.setString(6, email);
+            pstmt.setInt(3, age);
+            pstmt.setString(4, phone_no);
+            pstmt.setString(5, email);
+            pstmt.setString(6, job_id);
             pstmt.setDate(7, hire_date);
-            pstmt.setString(8, address_id);     // Updates address record
-            pstmt.setString(9, branch_id);      // Updates branch record
+            pstmt.setString(8, full_address);
+            pstmt.setString(9, branch_id);  // CURRENT BRANCH TO BE FIXED
             pstmt.setString(10, employee_id);
 
             pstmt.executeUpdate();
@@ -103,8 +186,11 @@ public class employee_record_management {
             pstmt.close();
             conn.close();
             return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
@@ -118,15 +204,17 @@ public class employee_record_management {
             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Employees WHERE employee_id=?");
             pstmt.setString(1, employee_id);
 
-
             pstmt.executeUpdate();
             System.out.println("Record was deleted");
 
             pstmt.close();
             conn.close();
             return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
@@ -144,23 +232,26 @@ public class employee_record_management {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                last_name = rs.getString("last_name");
-                first_name = rs.getString("first_name");
-                job_id = rs.getInt("job_id");
-                age = rs.getInt("age");
-                phone_no = rs.getString("phone_no");
-                email = rs.getString("email");
-                hire_date = rs.getDate("hire_date");
-                address_id = rs.getString("address_id");
-                branch_id = rs.getString("branch_id");
+                last_name    = rs.getString("last_name");
+                first_name   = rs.getString("first_name");
+                age          = rs.getInt("age");
+                phone_no     = rs.getString("phone_no");
+                email        = rs.getString("email");
+                job_id       = rs.getString("job_id");
+                hire_date    = rs.getDate("hire_date");
+                full_address = rs.getString("full_address");
+                branch_id    = rs.getString("branch_id");
                 recordcount++;
             }
 
             pstmt.close();
             conn.close();
-            return recordcount;
+            return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }

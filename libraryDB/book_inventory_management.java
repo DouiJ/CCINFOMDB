@@ -20,8 +20,6 @@ public class book_inventory_management {
     public String author_first_name;
 
 
-
-
     public book_inventory_management() {
         inventory_id = "";
         isbn = "";
