@@ -3,27 +3,17 @@ package libraryDB;
 import java.sql.*;
 import java.time.LocalDate;
 
-
 public class book_borrowing_transaction {
 
-
-    //Transaction Data Tables
-    //   - Managed with Transaction Processing
-    //   - Create a Transaction
-    //   - Submit and Finalize a Transaction
-    //   - Transaction-Specific Actions
-    //   - Cancel a Transaction
-    //   - Delete a Transaction
-
-    public String borrow_id;        // VARCHAR(10)
-    public Date date_borrowed;      // DATE
-    public Date date_due;           // DATE
-    public Date date_returned;      // DATE
-    public String borrow_status;    // ENUM('B','O','R','L')
-    public String book_id;          // VARCHAR(10)
-    public String patron_id;        // VARCHAR(10)
-    public String fines_id;         // VARCHAR(10)
-    public String clerk_id;         // VARCHAR(10)
+    private String borrow_id;           // VARCHAR(6)
+    private Date date_borrowed;         // DATE
+    private Date date_due;              // DATE
+    private Date date_returned;         // DATE
+    private String borrow_status;       // ENUM('B','O','R','L')
+    private String book_id;             // VARCHAR(10)
+    private String patron_id;           // VARCHAR(10)
+    private String clerk_id;            // VARCHAR(10)
+    private String transaction_status;  // ENUM('A','C')
 
     public book_borrowing_transaction() {
         borrow_id = "";
@@ -33,8 +23,80 @@ public class book_borrowing_transaction {
         borrow_status = "";
         book_id = "";
         patron_id = "";
-        fines_id = null;
         clerk_id = "";
+        transaction_status = "";
+    }
+
+    public String getBorrow_id() {
+        return borrow_id;
+    }
+
+    public void setBorrow_id(String borrow_id) {
+        this.borrow_id = borrow_id;
+    }
+
+    public Date getDate_borrowed() {
+        return date_borrowed;
+    }
+
+    public void setDate_borrowed(Date date_borrowed) {
+        this.date_borrowed = date_borrowed;
+    }
+
+    public Date getDate_due() {
+        return date_due;
+    }
+
+    public void setDate_due(Date date_due) {
+        this.date_due = date_due;
+    }
+
+    public Date getDate_returned() {
+        return date_returned;
+    }
+
+    public void setDate_returned(Date date_returned) {
+        this.date_returned = date_returned;
+    }
+
+    public String getBorrow_status() {
+        return borrow_status;
+    }
+
+    public void setBorrow_status(String borrow_status) {
+        this.borrow_status = borrow_status;
+    }
+
+    public String getBook_id() {
+        return book_id;
+    }
+
+    public void setBook_id(String book_id) {
+        this.book_id = book_id;
+    }
+
+    public String getPatron_id() {
+        return patron_id;
+    }
+
+    public void setPatron_id(String patron_id) {
+        this.patron_id = patron_id;
+    }
+
+    public String getClerk_id() {
+        return clerk_id;
+    }
+
+    public void setClerk_id(String clerk_id) {
+        this.clerk_id = clerk_id;
+    }
+
+    public String getTransaction_status() {
+        return transaction_status;
+    }
+
+    public void setTransaction_status(String transaction_status) {
+        this.transaction_status = transaction_status;
     }
 
     private boolean check_ClerkIDValidity() {
@@ -42,7 +104,7 @@ public class book_borrowing_transaction {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
             PreparedStatement pstmt = conn.prepareStatement(
-                    "SELECT 1 FROM Employees WHERE employee_id = ?");
+                    "SELECT 1 FROM Employees WHERE clerk_id = ?");
             pstmt.setString(1, clerk_id);
             ResultSet rs = pstmt.executeQuery();
 
@@ -149,18 +211,18 @@ public class book_borrowing_transaction {
                 Statement stmt = conn.createStatement();
                 rs = stmt.executeQuery("SELECT MAX(borrow_id) FROM Borrowing_History");
 
-                String maxBorrowNo = "BRW0000";
+                String maxBorrowNo = "B0000";
                 if (rs.next())
                     maxBorrowNo = rs.getString(1);
 
                 int borrowNoNumber = Integer.parseInt(maxBorrowNo.substring(3)) + 1;
-                borrow_id = "BRW" + String.format("%04d", borrowNoNumber);
+                borrow_id = "B" + String.format("%04d", borrowNoNumber);
 
                 // Insert borrowing record
                 PreparedStatement pstmt = conn.prepareStatement(
                         "INSERT INTO Borrowing_History (borrow_id, date_borrowed, date_due, " +
-                                "borrow_status, book_id, patron_id, clerk_id) " +
-                                "VALUES (?, ?, ?, ?, ?, ?, ?)");
+                                "borrow_status, book_id, patron_id, clerk_id, status) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
                 // Set current date and due date (14 days from now)
                 LocalDate currentDate = LocalDate.now();
@@ -173,6 +235,7 @@ public class book_borrowing_transaction {
                 pstmt.setString(5, book_id);
                 pstmt.setString(6, patron_id);
                 pstmt.setString(7, clerk_id);
+                pstmt.setString(8, "A");  // Available status
 
                 pstmt.executeUpdate();
                 System.out.println("Borrowing transaction created successfully");
@@ -181,9 +244,11 @@ public class book_borrowing_transaction {
                 conn.close();
                 return 1;
             }
-
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
@@ -205,34 +270,25 @@ public class book_borrowing_transaction {
                 return 0;
             }
 
-            // Calculate days overdue
-            Date dueDate = rs.getDate("date_due");
-            LocalDate currentDate = LocalDate.now();
-            long daysOverdue = currentDate.toEpochDay() - dueDate.toLocalDate().toEpochDay();
-
-            if (daysOverdue > 0) {
-                // Create a Fines record, use fine function
-                // MUST RETURN A FINES_ID -- Null if not overdue
-            } else
-                fines_id = null; // No fines if not overdue
-
             // Update borrowing record
             PreparedStatement pstmt = conn.prepareStatement(
-                    "UPDATE Borrowing_History SET date_returned = ?, borrow_status = ?, " +
-                            "fines_id = ? WHERE borrow_id = ?");
+                    "UPDATE Borrowing_History SET date_returned = ?, borrow_status = ? WHERE borrow_id = ?");
 
-            pstmt.setDate(1, Date.valueOf(currentDate));
+            pstmt.setDate(1, date_returned);  // INPUT DATE FOR WHEN
             pstmt.setString(2, "R");
-            pstmt.setString(3, fines_id);
             pstmt.setString(4, borrow_id);
             pstmt.executeUpdate();
 
             System.out.println("Return processed successfully.");
 
+            pstmt.close();
             conn.close();
             return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
@@ -245,7 +301,7 @@ public class book_borrowing_transaction {
 
             // Check if borrowing record exists
             PreparedStatement checkBorrowing = conn.prepareStatement(
-                    "SELECT 1 FROM Borrowing_History WHERE borrow_no = ?");
+                    "SELECT 1 FROM Borrowing_History WHERE borrow_id = ?");
             checkBorrowing.setString(1, borrow_id);
             ResultSet rs = checkBorrowing.executeQuery();
 
@@ -255,18 +311,17 @@ public class book_borrowing_transaction {
             }
 
             // Update borrowing record
-            PreparedStatement updateBorrowing = conn.prepareStatement(
-                    "UPDATE Borrowing_History SET date_borrowed = ?, date_due = ?, " +
-                            "borrow_status = ?, clerk_id = ? WHERE borrow_no = ?"
-            );
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "UPDATE Borrowing_History SET date_borrowed = ?, date_due = ?, date_returned = ?, borrow_status = ?, clerk_id = ? WHERE borrow_id = ?");
 
-            updateBorrowing.setDate(1, date_borrowed);
-            updateBorrowing.setDate(2, date_due);
-            updateBorrowing.setString(3, borrow_status);
-            updateBorrowing.setString(4, clerk_id);
-            updateBorrowing.setString(5, borrow_id);
+            pstmt.setDate(1, date_borrowed);
+            pstmt.setDate(2, date_due);
+            pstmt.setDate(3, date_returned);
+            pstmt.setString(4, borrow_status);
+            pstmt.setString(5, clerk_id);
+            pstmt.setString(6, borrow_id);
 
-            int rowsAffected = updateBorrowing.executeUpdate();
+            int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
                 System.out.println("Borrowing record updated successfully");
@@ -275,48 +330,60 @@ public class book_borrowing_transaction {
                 System.out.println("Failed to update borrowing record");
                 return 0;
             }
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
 
-
     // Delete a borrowing transaction
-    public int delete_Borrowing() {
+    public int cancel_Borrowing() {
         try {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
+            // Check if borrowing record exists
+            PreparedStatement checkBorrowing = conn.prepareStatement(
+                    "SELECT 1 FROM Borrowing_History WHERE borrow_id = ?");
+            checkBorrowing.setString(1, borrow_id);
+            ResultSet rs = checkBorrowing.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("Borrowing record not found");
+                return 0;
+            }
+
+            // Update borrowing record
             PreparedStatement pstmt = conn.prepareStatement(
-                    "DELETE FROM Borrowing_History " +
-                            "WHERE borrow_id = ?");
-            pstmt.setString(1, borrow_id);
-            int rowsAffected = pstmt.executeUpdate();
+                    "UPDATE Borrowing_History SET status = ? WHERE borrow_id = ?");
+            pstmt.setString(1, "C");
+            pstmt.setString(2, borrow_id);
+
+            pstmt.executeUpdate();
 
             pstmt.close();
             conn.close();
-
-            if (rowsAffected > 0) {
-                System.out.println("Borrowing transaction cancelled successfully");
-                return 1;
-            } else {
-                System.out.println("Cannot cancel: Transaction not found or already processed");
-                return 0;
-            }
+            System.out.println("Borrowing transaction cancelled successfully");
+            return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
 
     // Get borrowing details
-    public int getBorrowing() {
+    public int get_Borrowing() {
         try {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
             PreparedStatement pstmt = conn.prepareStatement(
-                    "SELECT * FROM Borrowing_History WHERE borrow_no = ?");
+                    "SELECT * FROM Borrowing_History WHERE borrow_id = ?");
             pstmt.setString(1, borrow_id);
 
             ResultSet rs = pstmt.executeQuery();
@@ -328,8 +395,8 @@ public class book_borrowing_transaction {
                 borrow_status = rs.getString("borrow_status");
                 book_id = rs.getString("book_id");
                 patron_id = rs.getString("patron_id");
-                fines_id = rs.getString("fines_id");
                 clerk_id = rs.getString("clerk_id");
+                transaction_status = rs.getString("status");
 
                 pstmt.close();
                 conn.close();
@@ -339,11 +406,13 @@ public class book_borrowing_transaction {
             pstmt.close();
             conn.close();
             return 0;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
     }
-
-
 }
+

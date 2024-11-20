@@ -5,7 +5,6 @@ import java.sql.*;
 public class book_detail_management {
 
     private String isbn;
-
     private String title;
     private String price;
     private String author_last_name;
@@ -14,6 +13,42 @@ public class book_detail_management {
 
     public book_detail_management() {
         isbn = "";
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getAuthor_first_name() {
+        return author_first_name;
+    }
+
+    public void setAuthor_first_name(String author_first_name) {
+        this.author_first_name = author_first_name;
+    }
+
+    public String getAuthor_last_name() {
+        return author_last_name;
+    }
+
+    public void setAuthor_last_name(String author_last_name) {
+        this.author_last_name = author_last_name;
     }
 
     public String add_Book_details() {
@@ -135,40 +170,5 @@ public class book_detail_management {
 
     }
 
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public void setAuthor_last_name(String author_last_name) {
-        this.author_last_name = author_last_name;
-    }
-
-    public void setAuthor_first_name(String author_first_name) {
-        this.author_first_name = author_first_name;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public String getAuthor_first_name() {
-        return author_first_name;
-    }
-
-    public String getAuthor_last_name() {
-        return author_last_name;
-    }
 }
 
