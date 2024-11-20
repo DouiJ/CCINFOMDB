@@ -104,7 +104,7 @@ public class book_borrowing_transaction {
             Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
             PreparedStatement pstmt = conn.prepareStatement(
-                    "SELECT 1 FROM Employees WHERE employee_id = ?");
+                    "SELECT 1 FROM Employees WHERE clerk_id = ?");
             pstmt.setString(1, clerk_id);
             ResultSet rs = pstmt.executeQuery();
 
@@ -301,7 +301,7 @@ public class book_borrowing_transaction {
 
             // Check if borrowing record exists
             PreparedStatement checkBorrowing = conn.prepareStatement(
-                    "SELECT 1 FROM Borrowing_History WHERE borrow_no = ?");
+                    "SELECT 1 FROM Borrowing_History WHERE borrow_id = ?");
             checkBorrowing.setString(1, borrow_id);
             ResultSet rs = checkBorrowing.executeQuery();
 
@@ -312,7 +312,7 @@ public class book_borrowing_transaction {
 
             // Update borrowing record
             PreparedStatement pstmt = conn.prepareStatement(
-                    "UPDATE Borrowing_History SET date_borrowed = ?, date_due = ?, date_returned = ?, borrow_status = ?, clerk_id = ? WHERE borrow_no = ?");
+                    "UPDATE Borrowing_History SET date_borrowed = ?, date_due = ?, date_returned = ?, borrow_status = ?, clerk_id = ? WHERE borrow_id = ?");
 
             pstmt.setDate(1, date_borrowed);
             pstmt.setDate(2, date_due);
@@ -346,7 +346,7 @@ public class book_borrowing_transaction {
 
             // Check if borrowing record exists
             PreparedStatement checkBorrowing = conn.prepareStatement(
-                    "SELECT 1 FROM Borrowing_History WHERE borrow_no = ?");
+                    "SELECT 1 FROM Borrowing_History WHERE borrow_id = ?");
             checkBorrowing.setString(1, borrow_id);
             ResultSet rs = checkBorrowing.executeQuery();
 
@@ -357,14 +357,14 @@ public class book_borrowing_transaction {
 
             // Update borrowing record
             PreparedStatement pstmt = conn.prepareStatement(
-                    "UPDATE Borrowing_History SET status = ? WHERE borrow_no = ?");
+                    "UPDATE Borrowing_History SET status = ? WHERE borrow_id = ?");
             pstmt.setString(1, "C");
+            pstmt.setString(2, borrow_id);
 
             pstmt.executeUpdate();
 
             pstmt.close();
             conn.close();
-
             System.out.println("Borrowing transaction cancelled successfully");
             return 1;
         } catch (SQLException e) {
@@ -383,7 +383,7 @@ public class book_borrowing_transaction {
                     "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
             PreparedStatement pstmt = conn.prepareStatement(
-                    "SELECT * FROM Borrowing_History WHERE borrow_no = ?");
+                    "SELECT * FROM Borrowing_History WHERE borrow_id = ?");
             pstmt.setString(1, borrow_id);
 
             ResultSet rs = pstmt.executeQuery();

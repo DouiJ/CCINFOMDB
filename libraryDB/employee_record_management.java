@@ -12,10 +12,10 @@ public class employee_record_management {
     private String employee_id;  // VARCHAR(10)
     private String last_name;    // VARCHAR(45)
     private String first_name;   // VARCHAR(45)
-    private int age;             // TINYINT
+    private String age;          // TINYINT
     private String phone_no;     // VARCHAR(13)
     private String email;        // VARCHAR(45)
-    private String job_id;         // ENUM (1 CHAR)
+    private String job_id;       // ENUM (1 CHAR)
     private Date hire_date;      // DATE
     private String full_address; // VARCHAR(100)
     private String branch_id;    // VARCHAR(10)
@@ -24,7 +24,7 @@ public class employee_record_management {
         employee_id = "";
         last_name = "";
         first_name = "";
-        age = 0;
+        age = "";
         phone_no = "";
         email = "";
         hire_date = null;
@@ -138,7 +138,7 @@ public class employee_record_management {
             pstmt.setString(2, last_name);
             pstmt.setString(3, first_name);
             pstmt.setString(4, job_id);
-            pstmt.setInt(5, age);
+            pstmt.setInt(5, Integer.parseInt(age));
             pstmt.setString(6, phone_no);
             pstmt.setString(7, email);
             pstmt.setDate(8, hire_date);
@@ -171,7 +171,7 @@ public class employee_record_management {
 
             pstmt.setString(1, last_name);
             pstmt.setString(2, first_name);
-            pstmt.setInt(3, age);
+            pstmt.setInt(3, Integer.parseInt(age));
             pstmt.setString(4, phone_no);
             pstmt.setString(5, email);
             pstmt.setString(6, job_id);
@@ -234,7 +234,7 @@ public class employee_record_management {
             while (rs.next()) {
                 last_name    = rs.getString("last_name");
                 first_name   = rs.getString("first_name");
-                age          = rs.getInt("age");
+                age          = rs.getString("age");
                 phone_no     = rs.getString("phone_no");
                 email        = rs.getString("email");
                 job_id       = rs.getString("job_id");
