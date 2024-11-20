@@ -7,14 +7,12 @@ public class branch_management {
 
     //FIELDS
     public String branch_id;  // VARCHAR 10 (PK)
-    public String manager_id; // VARCHAR 10 (FK)
-    public String address_id; // VARCHAR 10 (FK)
+    public String full_address; // VARCHAR 100
     public String phone_no;    // VARCHAR 13
 
     public branch_management() {
         this.branch_id = "";
-        this.manager_id = "";
-        this.address_id = "";
+        this.full_address = "";
         this.phone_no = "";
     }
 
@@ -39,17 +37,17 @@ public class branch_management {
             int branchIDNumber = Integer.parseInt(maxBranchID.substring(1)) + 1; //Extract the number part only and add 1
             this.branch_id = "B" + String.format("%04d", branchIDNumber);
 
-            String sql = "INSERT INTO Branches (branch_id, manager_id, address_id, phone_no) VALUES (?, ?, ?, ?)";
+            String sql = "INSERT INTO Branches (branch_id, full_address, phone_no) VALUES (?, ?, ?)";
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, branch_id);
-            pstmt.setString(2, manager_id);
-            pstmt.setString(3, address_id);
-            pstmt.setString(4, phone_no);
+            pstmt.setString(2, full_address);
+            pstmt.setString(3, phone_no);
 
             pstmt.executeUpdate();
             System.out.println("Record was created");
 
+            resultSet.close();
             pstmt.close();
             connection.close();
             return branch_id;
@@ -102,13 +100,12 @@ public class branch_management {
         )) {
             System.out.println("Connection to DB Successful.");
 
-            String sql = "UPDATE Branches SET manager_id=?, address_id=?, phone_no=? WHERE branch_id=?";
+            String sql = "UPDATE Branches SET full_address=?, phone_no=? WHERE branch_id=?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
-            pstmt.setString(1, manager_id);
-            pstmt.setString(2, address_id);
-            pstmt.setString(3, phone_no);
-            pstmt.setString(4, branch_id);
+            pstmt.setString(1, full_address);
+            pstmt.setString(2, phone_no);
+            pstmt.setString(3, branch_id);
 
             pstmt.executeUpdate();
             System.out.println("Record was updated");
@@ -170,8 +167,7 @@ public class branch_management {
             ResultSet resultSet = pstmt.executeQuery();
 
             while (resultSet.next()) {
-                manager_id = resultSet.getString("manager_id");
-                address_id = resultSet.getString("address_id");
+                full_address = resultSet.getString("full_address");
                 phone_no = resultSet.getString("phone_no");
                 recordcount++;
             }
@@ -187,42 +183,6 @@ public class branch_management {
             return 0;
         }
     }
-
-    public int get_Branch_Manager() {
-        int recordcount = 0;
-
-        try (Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://127.0.0.1:3306/library",
-                "root",
-                "3d6%vQmT"
-        )) {
-            System.out.println("Connection to DB Successful.");
-
-            String sql = "SELECT * FROM Branches WHERE branch_id=? && manager_id=?";
-            PreparedStatement pstmt = connection.prepareStatement(sql);
-
-            pstmt.setString(1, branch_id);
-            pstmt.setString(1, manager_id);
-            ResultSet resultSet = pstmt.executeQuery();
-
-            while (resultSet.next()) {
-                address_id = resultSet.getString("address_id");
-                phone_no = resultSet.getString("phone_no");
-                recordcount++;
-            }
-
-            pstmt.close();
-            connection.close();
-            return recordcount;
-        } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
-            return 0;
-        } catch (Exception e) {
-            System.out.println("Unexpected error: " + e.getMessage());
-            return 0;
-        }
-    }
-
 
 
 }

@@ -103,7 +103,7 @@ public class book_detail_management {
         }
     }
 
-    public int get_ISBN() {
+    public int get_Book_details() {
         int recordcount = 0;
 
         try (Connection connection = DriverManager.getConnection(

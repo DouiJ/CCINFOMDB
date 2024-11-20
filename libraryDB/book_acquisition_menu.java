@@ -9,8 +9,6 @@ public class book_acquisition_menu {
     public book_acquisition_menu() {
     }
 
-    public void input
-
     public void inputBookAcquisitionInfo(book_acquisition_management bookAcq) {
         Scanner scanner = new Scanner(System.in);
         String temp;
@@ -43,7 +41,7 @@ public class book_acquisition_menu {
             System.out.printf("   %-2s ➤ %-40s%n", "[2]", "Cancel a acquisition");
             System.out.printf("   %-2s ➤ %-40s%n", "[0]", "Exit");
             System.out.println("═══════════════════════════════════════════════════════════════");
-            System.out.println("📌 Use numbers (0 - 9) to navigate the menu.");
+            System.out.println("📌 Use numbers (0 - 2) to navigate the menu.");
 
             System.out.print("➡️  Enter your choice: ");
             choice = scanner.nextInt();
@@ -51,8 +49,8 @@ public class book_acquisition_menu {
             switch (choice) {
                 case 1:
                     inputBookAcquisitionInfo(bookAcq);
-                    bookAcq.add_Book_acquisition()
-                    while (sb.sb_menu() != 0) {}
+                    bookAcq.add_Book_acquisition();
+
                     break;
                 case 2:
                     employee_management_menu e = new employee_management_menu();
