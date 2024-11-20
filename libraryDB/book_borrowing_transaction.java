@@ -149,12 +149,12 @@ public class book_borrowing_transaction {
                 Statement stmt = conn.createStatement();
                 rs = stmt.executeQuery("SELECT MAX(borrow_id) FROM Borrowing_History");
 
-                String maxBorrowNo = "BRW0000";
+                String maxBorrowNo = "B0000";
                 if (rs.next())
                     maxBorrowNo = rs.getString(1);
 
                 int borrowNoNumber = Integer.parseInt(maxBorrowNo.substring(3)) + 1;
-                borrow_id = "BRW" + String.format("%04d", borrowNoNumber);
+                borrow_id = "B" + String.format("%04d", borrowNoNumber);
 
                 // Insert borrowing record
                 PreparedStatement pstmt = conn.prepareStatement(
@@ -310,7 +310,7 @@ public class book_borrowing_transaction {
     }
 
     // Get borrowing details
-    public int getBorrowing() {
+    public int get_Borrowing() {
         try {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
