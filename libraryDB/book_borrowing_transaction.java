@@ -3,163 +3,6 @@ package libraryDB;
 import java.sql.*;
 import java.time.LocalDate;
 
-
-// Process book return
-public int process_Return() {
-    try {
-        Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-
-        // Get borrowing details -- Dropdown on what to return getList of borrow_id for that branch
-        PreparedStatement getBorrowing = conn.prepareStatement(
-                "SELECT date_due FROM Borrowing_History WHERE borrow_id = ?");
-        getBorrowing.setString(1, borrow_id);
-        ResultSet rs = getBorrowing.executeQuery();
-
-        if (!rs.next()) {
-            System.out.println("Borrowing record not found");
-            return 0;
-        }
-
-        // Calculate days overdue
-        Date dueDate = rs.getDate("date_due");
-        LocalDate currentDate = LocalDate.now();
-        long daysOverdue = currentDate.toEpochDay() - dueDate.toLocalDate().toEpochDay();
-
-        if (daysOverdue > 0) {
-            // Create a Fines record, use fine function
-            // MUST RETURN A FINES_ID -- Null if not overdue
-        } else
-            fines_id = null; // No fines if not overdue
-
-        // Update borrowing record
-        PreparedStatement pstmt = conn.prepareStatement(
-                "UPDATE Borrowing_History SET date_returned = ?, borrow_status = ?, " +
-                        "fines_id = ? WHERE borrow_id = ?");
-
-        pstmt.setDate(1, Date.valueOf(currentDate));
-        pstmt.setString(2, "R");
-        pstmt.setString(3, fines_id);
-        pstmt.setString(4, borrow_id);
-        pstmt.executeUpdate();
-
-        System.out.println("Return processed successfully.");
-
-        conn.close();
-        return 1;
-    } catch (Exception e) {
-        System.out.println(e.getMessage());
-        return 0;
-    }
-}
-
-// Update an existing borrowing record
-public int update_Borrowing() {
-    try {
-        Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-
-        // Check if borrowing record exists
-        PreparedStatement checkBorrowing = conn.prepareStatement(
-                "SELECT 1 FROM Borrowing_History WHERE borrow_no = ?");
-        checkBorrowing.setString(1, borrow_id);
-        ResultSet rs = checkBorrowing.executeQuery();
-
-        if (!rs.next()) {
-            System.out.println("Borrowing record not found");
-            return 0;
-        }
-
-        // Update borrowing record
-        PreparedStatement updateBorrowing = conn.prepareStatement(
-                "UPDATE Borrowing_History SET date_borrowed = ?, date_due = ?, " +
-                        "borrow_status = ?, clerk_id = ? WHERE borrow_no = ?"
-        );
-
-        updateBorrowing.setDate(1, date_borrowed);
-        updateBorrowing.setDate(2, date_due);
-        updateBorrowing.setString(3, borrow_status);
-        updateBorrowing.setString(4, clerk_id);
-        updateBorrowing.setString(5, borrow_id);
-
-        int rowsAffected = updateBorrowing.executeUpdate();
-
-        if (rowsAffected > 0) {
-            System.out.println("Borrowing record updated successfully");
-            return 1;
-        } else {
-            System.out.println("Failed to update borrowing record");
-            return 0;
-        }
-    } catch (Exception e) {
-        System.out.println(e.getMessage());
-        return 0;
-    }
-}
-
-// Delete a borrowing transaction
-public int delete_Borrowing() {
-    try {
-        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-
-        PreparedStatement pstmt = conn.prepareStatement(
-                "DELETE FROM Borrowing_History " +
-                        "WHERE borrow_id = ?");
-        pstmt.setString(1, borrow_id);
-        int rowsAffected = pstmt.executeUpdate();
-
-        pstmt.close();
-        conn.close();
-
-        if (rowsAffected > 0) {
-            System.out.println("Borrowing transaction cancelled successfully");
-            return 1;
-        } else {
-            System.out.println("Cannot cancel: Transaction not found or already processed");
-            return 0;
-        }
-    } catch (Exception e) {
-        System.out.println(e.getMessage());
-        return 0;
-    }
-}
-
-// Get borrowing details
-public int get_Borrowing() {
-    try {
-        Connection conn = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-
-        PreparedStatement pstmt = conn.prepareStatement(
-                "SELECT * FROM Borrowing_History WHERE borrow_no = ?");
-        pstmt.setString(1, borrow_id);
-
-        ResultSet rs = pstmt.executeQuery();
-
-        if (rs.next()) {
-            date_borrowed = rs.getDate("date_borrowed");
-            date_due = rs.getDate("date_due");
-            date_returned = rs.getDate("date_returned");
-            borrow_status = rs.getString("borrow_status");
-            book_id = rs.getString("book_id");
-            patron_id = rs.getString("patron_id");
-            fines_id = rs.getString("fines_id");
-            clerk_id = rs.getString("clerk_id");
-
-            pstmt.close();
-            conn.close();
-            return 1;
-        }
-
-        pstmt.close();
-        conn.close();
-        return 0;
-    } catch (Exception e) {
-        System.out.println(e.getMessage());
-        return 0;
-    }
-}
-
 public class book_borrowing_transaction {
 
     private String borrow_id;           // VARCHAR(6)
@@ -378,8 +221,8 @@ public class book_borrowing_transaction {
                 // Insert borrowing record
                 PreparedStatement pstmt = conn.prepareStatement(
                         "INSERT INTO Borrowing_History (borrow_id, date_borrowed, date_due, " +
-                                "borrow_status, book_id, patron_id, clerk_id) " +
-                                "VALUES (?, ?, ?, ?, ?, ?, ?)");
+                                "borrow_status, book_id, patron_id, clerk_id, status) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 
                 // Set current date and due date (14 days from now)
                 LocalDate currentDate = LocalDate.now();
@@ -392,6 +235,7 @@ public class book_borrowing_transaction {
                 pstmt.setString(5, book_id);
                 pstmt.setString(6, patron_id);
                 pstmt.setString(7, clerk_id);
+                pstmt.setString(8, "A");  // Available status
 
                 pstmt.executeUpdate();
                 System.out.println("Borrowing transaction created successfully");
@@ -408,7 +252,167 @@ public class book_borrowing_transaction {
             return 0;
         }
     }
+
+    // Process book return
+    public int process_Return() {
+        try {
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+
+            // Get borrowing details -- Dropdown on what to return getList of borrow_id for that branch
+            PreparedStatement getBorrowing = conn.prepareStatement(
+                    "SELECT date_due FROM Borrowing_History WHERE borrow_id = ?");
+            getBorrowing.setString(1, borrow_id);
+            ResultSet rs = getBorrowing.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("Borrowing record not found");
+                return 0;
+            }
+
+            // Update borrowing record
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "UPDATE Borrowing_History SET date_returned = ?, borrow_status = ? WHERE borrow_id = ?");
+
+            pstmt.setDate(1, date_returned);  // INPUT DATE FOR WHEN
+            pstmt.setString(2, "R");
+            pstmt.setString(4, borrow_id);
+            pstmt.executeUpdate();
+
+            System.out.println("Return processed successfully.");
+
+            pstmt.close();
+            conn.close();
+            return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    // Update an existing borrowing record
+    public int update_Borrowing() {
+        try {
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+
+            // Check if borrowing record exists
+            PreparedStatement checkBorrowing = conn.prepareStatement(
+                    "SELECT 1 FROM Borrowing_History WHERE borrow_no = ?");
+            checkBorrowing.setString(1, borrow_id);
+            ResultSet rs = checkBorrowing.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("Borrowing record not found");
+                return 0;
+            }
+
+            // Update borrowing record
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "UPDATE Borrowing_History SET date_borrowed = ?, date_due = ?, date_returned = ?, borrow_status = ?, clerk_id = ? WHERE borrow_no = ?");
+
+            pstmt.setDate(1, date_borrowed);
+            pstmt.setDate(2, date_due);
+            pstmt.setDate(3, date_returned);
+            pstmt.setString(4, borrow_status);
+            pstmt.setString(5, clerk_id);
+            pstmt.setString(6, borrow_id);
+
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Borrowing record updated successfully");
+                return 1;
+            } else {
+                System.out.println("Failed to update borrowing record");
+                return 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    // Delete a borrowing transaction
+    public int cancel_Borrowing() {
+        try {
+            Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+
+            // Check if borrowing record exists
+            PreparedStatement checkBorrowing = conn.prepareStatement(
+                    "SELECT 1 FROM Borrowing_History WHERE borrow_no = ?");
+            checkBorrowing.setString(1, borrow_id);
+            ResultSet rs = checkBorrowing.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("Borrowing record not found");
+                return 0;
+            }
+
+            // Update borrowing record
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "UPDATE Borrowing_History SET status = ? WHERE borrow_no = ?");
+            pstmt.setString(1, "C");
+
+            pstmt.executeUpdate();
+
+            pstmt.close();
+            conn.close();
+
+            System.out.println("Borrowing transaction cancelled successfully");
+            return 1;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            return 0;
+        }
+    }
+
+    // Get borrowing details
+    public int get_Borrowing() {
+        try {
+            Connection conn = DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+
+            PreparedStatement pstmt = conn.prepareStatement(
+                    "SELECT * FROM Borrowing_History WHERE borrow_no = ?");
+            pstmt.setString(1, borrow_id);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                date_borrowed = rs.getDate("date_borrowed");
+                date_due = rs.getDate("date_due");
+                date_returned = rs.getDate("date_returned");
+                borrow_status = rs.getString("borrow_status");
+                book_id = rs.getString("book_id");
+                patron_id = rs.getString("patron_id");
+                clerk_id = rs.getString("clerk_id");
+                transaction_status = rs.getString("status");
+
+                pstmt.close();
+                conn.close();
+                return 1;
+            }
+
+            pstmt.close();
+            conn.close();
+            return 0;
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            return 0;
+        }
+    }
 }
 
-
-}
