@@ -7,7 +7,7 @@ public class patron_management {
     public String patron_id; // VARCHAR(10.)
     public String last_name; // VARCHAR(45)
     public String first_name; // VARCHAR(45)
-    public int age; // INT
+    public String age; // INT
 
     public enum Gender {
         M, F
@@ -21,14 +21,15 @@ public class patron_management {
         patron_id = "";
         last_name = "";
         first_name = "";
-        age = 0;
+        age = "";
         gender = null;
         phone_no = "";
         email = "";
     }
 
     // generates the lowest vacant patron_id
-    public static String generatePatronId() {
+    public static String generatePatronId()
+    {
         String query = "SELECT patron_id FROM patrons ORDER BY patron_id ASC";
         try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/libraryDB", "username",
                 "password");

@@ -15,8 +15,8 @@ public class book_acquisition_management {
     public book_acquisition_management() {
         this.acquisition_id = "";
         this.acquisition_date = "";
-        this.acquisition_price = "";
         this.supplier_name = "";
+        this.acquisition_price = "";
         this.copies_acquired = "";
         this.archivist_id = "";
         this.isbn = "";
@@ -44,13 +44,13 @@ public class book_acquisition_management {
                                                                                           // only and add 1
             this.acquisition_id = "B" + String.format("%04d", aquisitionIDNumber);
 
-            String sql = "INSERT INTO Book_Acquisitions (acquisition_id, acquisition_date, acquisition_price, supplier_name, copies_acquired, archivist_id, isbn, branch_delivered) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Book_Acquisitions (acquisition_id, acquisition_date, supplier_name, acquisition_price, copies_acquired, archivist_id, isbn, branch_delivered) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, acquisition_id);
             pstmt.setString(2, acquisition_date);
-            pstmt.setDouble(3, Double.parseDouble(acquisition_price));
-            pstmt.setString(4, supplier_name);
+            pstmt.setString(3, supplier_name);
+            pstmt.setDouble(4, Double.parseDouble(acquisition_price));
             pstmt.setInt(5, Integer.parseInt(copies_acquired));
             pstmt.setString(6, archivist_id);
             pstmt.setString(7, isbn);
@@ -81,13 +81,13 @@ public class book_acquisition_management {
 
             System.out.println("Connection to DB Successful.");
 
-            String sql = "UPDATE Book_Acquisitions SET acquisition_date=?, acquisition_price=?, supplier_name=?, copies_acquired=?, archivist_id=?, isbn=?, branch_delivered=? WHERE acquisition_id=?";
+            String sql = "UPDATE Book_Acquisitions SET acquisition_date=?, supplier_name=?, acquisition_price=?, copies_acquired=?, archivist_id=?, isbn=?, branch_delivered=? WHERE acquisition_id=?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, acquisition_id);
             pstmt.setString(2, acquisition_date);
-            pstmt.setDouble(3, Double.parseDouble(acquisition_price));
-            pstmt.setString(4, supplier_name);
+            pstmt.setString(3, supplier_name);
+            pstmt.setDouble(4, Double.parseDouble(acquisition_price));
             pstmt.setInt(5, Integer.parseInt(copies_acquired));
             pstmt.setString(6, archivist_id);
             pstmt.setString(7, isbn);
@@ -152,8 +152,8 @@ public class book_acquisition_management {
 
             while (resultSet.next()) {
                 acquisition_date = resultSet.getString("acquisition_date");
-                acquisition_price = resultSet.getString("acquisition_price");
                 supplier_name = resultSet.getString("supplier_name");
+                acquisition_price = resultSet.getString("acquisition_price");
                 copies_acquired = resultSet.getString("copies_acquired");
                 archivist_id = resultSet.getString("archivist_id");
                 isbn = resultSet.getString("isbn");
