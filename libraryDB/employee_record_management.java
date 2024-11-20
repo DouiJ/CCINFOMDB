@@ -57,11 +57,11 @@ public class employee_record_management {
         this.first_name = first_name;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 

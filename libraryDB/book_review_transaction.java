@@ -1,22 +1,14 @@
 package libraryDB;
 
 import java.sql.*;
-import java.time.LocalDate;
-
-//Transaction Data Tables
-//   - Managed with Transaction Processing
-//   - Create a Transaction
-//   - Submit and Finalize a Transaction
-//   - Transaction-Specific Actions
-//   - Cancel a Transaction
-//   - Delete a Transaction
 
 public class book_review_transaction {
-    public String rating_id; // VARCHAR(10)
-    public Float rating_score; // DECIMAL(2,1)
-    public Date rating_date; // DATE
-    public String rating_comment; // VARCHAR(200)
-    public String borrow_no; // VARCHAR(10)
+    private String rating_id;      // VARCHAR(10)
+    private String rating_score;   // DECIMAL(2,1)
+    private Date rating_date;      // DATE
+    private String rating_comment; // VARCHAR(200)
+    private String borrow_id;      // VARCHAR(10)
+    private String status;         // ENUM
 
     // constructor
     public book_review_transaction() {
@@ -24,7 +16,48 @@ public class book_review_transaction {
         rating_score = null;
         rating_date = null;
         rating_comment = "";
-        borrow_no = "";
+        borrow_id = "";
+        status = "";
+    }
+
+    public String getRating_id() {
+        return rating_id;
+    }
+
+    public void setRating_id(String rating_id) {
+        this.rating_id = rating_id;
+    }
+
+    public String getRating_score() {
+        return rating_score;
+    }
+
+    public void setRating_score(String rating_score) {
+        this.rating_score = rating_score;
+    }
+
+    public Date getRating_date() {
+        return rating_date;
+    }
+
+    public void setRating_date(Date rating_date) {
+        this.rating_date = rating_date;
+    }
+
+    public String getRating_comment() {
+        return rating_comment;
+    }
+
+    public void setRating_comment(String rating_comment) {
+        this.rating_comment = rating_comment;
+    }
+
+    public String getBorrow_id() {
+        return borrow_id;
+    }
+
+    public void setBorrow_id(String borrow_id) {
+        this.borrow_id = borrow_id;
     }
 
     public boolean canPatronReview() {
@@ -32,11 +65,10 @@ public class book_review_transaction {
             Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
-            // Fetch patron_id from Borrowing_History table based on borrow_no
+            // Fetch patron_id from Borrowing_History table based on borrow_id
             PreparedStatement fetchPatronIdStmt = conn.prepareStatement(
-                    "SELECT patron_id FROM Borrowing_History WHERE borrow_no = ?");
-
-            fetchPatronIdStmt.setString(1, borrow_no);
+                    "SELECT patron_id FROM Borrowing_History WHERE borrow_id = ?");
+            fetchPatronIdStmt.setString(1, borrow_id);
             ResultSet rs = fetchPatronIdStmt.executeQuery();
 
             if (!rs.next()) {
@@ -49,11 +81,11 @@ public class book_review_transaction {
             String patron_id = rs.getString("patron_id");
             fetchPatronIdStmt.close();
 
-            // Check if Patron has an acitve borrowing with the current book
+            // Check if Patron has an active borrowing with the current book
             PreparedStatement pstmt = conn.prepareStatement(
-                    "SELECT 1 FROM Borrowing_History WHERE patron_id = ? AND borrow_no = ? AND borrow_status = 'B'");
+                    "SELECT 1 FROM Borrowing_History WHERE patron_id = ? AND borrow_id = ? AND borrow_status = 'B'");
             pstmt.setString(1, patron_id);
-            pstmt.setString(2, borrow_no);
+            pstmt.setString(2, borrow_id);
 
             rs = pstmt.executeQuery();
 
@@ -74,13 +106,11 @@ public class book_review_transaction {
                 System.out.println("Book has not been borrowed or is not in active inventory.");
                 return 0;
             } else {
-                Connection conn = DriverManager.getConnection(
-                        "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+                Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
 
                 // Check if review has already been made
-                PreparedStatement reviewAlreadyExists = conn.prepareStatement(
-                        "SELECT 1 FROM Book_Reviews WHERE borrow_no = ?");
-                reviewAlreadyExists.setString(1, borrow_no);
+                PreparedStatement reviewAlreadyExists = conn.prepareStatement("SELECT 1 FROM Book_Reviews WHERE borrow_id = ?");
+                reviewAlreadyExists.setString(1, borrow_id);
                 ResultSet rs = reviewAlreadyExists.executeQuery();
 
                 if (rs.next()) {
@@ -93,13 +123,14 @@ public class book_review_transaction {
 
                 // Insert new review
                 PreparedStatement revStmt = conn.prepareStatement(
-                        "INSERT INTO Book_Reviews (rating_id, rating_score, rating_date, rating_comment, borrow_no) " +
-                                "VALUES (?, ?, ?, ?, ?)");
+                        "INSERT INTO Book_Reviews (rating_id, rating_date, rating_score,  rating_comment, borrow_id, status) " +
+                                "VALUES (?, ?, ?, ?, ?, ?)");
                 revStmt.setString(1, rating_id);
-                revStmt.setFloat(2, rating_score);
-                revStmt.setDate(3, rating_date);
+                revStmt.setDate(2, rating_date);
+                revStmt.setFloat(3, Float.parseFloat(rating_score));
                 revStmt.setString(4, rating_comment);
-                revStmt.setString(5, borrow_no);
+                revStmt.setString(5, borrow_id);
+                revStmt.setString(6, "A");
 
                 int rowsInserted = revStmt.executeUpdate();
                 revStmt.close();
@@ -131,8 +162,8 @@ public class book_review_transaction {
 
                 // Check if review record exists
                 PreparedStatement reviewExistsStmt = conn.prepareStatement(
-                        "SELECT 1 FROM Book_Reviews WHERE borrow_no = ?");
-                reviewExistsStmt.setString(1, borrow_no);
+                        "SELECT 1 FROM Book_Reviews WHERE borrow_id = ?");
+                reviewExistsStmt.setString(1, borrow_id);
                 ResultSet rs = reviewExistsStmt.executeQuery();
 
                 if (!rs.next()) {
@@ -145,11 +176,11 @@ public class book_review_transaction {
 
                 // Update review record
                 PreparedStatement updateStmt = conn.prepareStatement(
-                        "UPDATE Book_Reviews SET rating_score = ?, rating_date = ?, rating_comment = ? WHERE borrow_no = ?");
+                        "UPDATE Book_Reviews SET rating_score = ?, rating_date = ?, rating_comment = ? WHERE borrow_id = ?");
                 updateStmt.setFloat(1, rating_score);
                 updateStmt.setDate(2, rating_date);
                 updateStmt.setString(3, rating_comment);
-                updateStmt.setString(4, borrow_no);
+                updateStmt.setString(4, borrow_id);
 
                 // Store success into rowsUpdated
                 int rowsUpdated = updateStmt.executeUpdate();
@@ -178,8 +209,8 @@ public class book_review_transaction {
 
             // Check if review record exists
             PreparedStatement reviewExistsStmt = conn.prepareStatement(
-                    "SELECT 1 FROM Book_Reviews WHERE borrow_no = ?");
-            reviewExistsStmt.setString(1, borrow_no);
+                    "SELECT 1 FROM Book_Reviews WHERE borrow_id = ?");
+            reviewExistsStmt.setString(1, borrow_id);
             ResultSet rs = reviewExistsStmt.executeQuery();
 
             if (!rs.next()) {
@@ -192,8 +223,8 @@ public class book_review_transaction {
 
             // Delete review record
             PreparedStatement deleteStmt = conn.prepareStatement(
-                    "DELETE FROM Book_Reviews WHERE borrow_no = ?");
-            deleteStmt.setString(1, borrow_no);
+                    "DELETE FROM Book_Reviews WHERE borrow_id = ?");
+            deleteStmt.setString(1, borrow_id);
 
             int rowsDeleted = deleteStmt.executeUpdate();
             deleteStmt.close();
@@ -219,8 +250,8 @@ public class book_review_transaction {
 
             // Check if review record exists
             PreparedStatement reviewExistsStmt = conn.prepareStatement(
-                    "SELECT rating_id, rating_score, rating_date, rating_comment FROM Book_Reviews WHERE borrow_no = ?");
-            reviewExistsStmt.setString(1, borrow_no);
+                    "SELECT rating_id, rating_score, rating_date, rating_comment FROM Book_Reviews WHERE borrow_id = ?");
+            reviewExistsStmt.setString(1, borrow_id);
             ResultSet rs = reviewExistsStmt.executeQuery();
 
             if (!rs.next()) {
