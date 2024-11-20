@@ -3,14 +3,14 @@ package libraryDB;
 import java.sql.*;
 
 public class book_acquisition_management {
-    public String acquisition_id;
-    public String acquisition_date;
-    public double acquisition_price;
-    public String supplier_name;
-    public int copies_acquired;
-    public String archivist_id;
-    public String isbn;
-    public String branch_delivered;
+    private String acquisition_id;
+    private String acquisition_date;
+    private String acquisition_price;
+    private String supplier_name;
+    private String copies_acquired;
+    private String archivist_id;
+    private String isbn;
+    private String branch_delivered;
 
     public book_acquisition_management() {
         this.acquisition_id = "";
@@ -171,5 +171,65 @@ public class book_acquisition_management {
             System.out.println("Unexpected error: " + e.getMessage());
             return 0;
         }
+    }
+
+    // **********************************************
+    //              GETTERS AND SETTERS
+    // **********************************************
+
+    public void setAcquisition_date(String acquisition_date) {
+        this.acquisition_date = acquisition_date;
+    }
+
+    public void setAcquisition_price(double acquisition_price) {
+        this.acquisition_price = acquisition_price;
+    }
+
+    public void setSupplier_name(String supplier_name) {
+        this.supplier_name = supplier_name;
+    }
+
+    public void setCopies_acquired(int copies_acquired) {
+        this.copies_acquired = copies_acquired;
+    }
+
+    public void setArchivist_id(String archivist_id) {
+        this.archivist_id = archivist_id;
+    }
+
+    public void setIsbn(String isbn) {
+        this.isbn = isbn;
+    }
+
+    public void setBranch_delivered(String branch_delivered) {
+        this.branch_delivered = branch_delivered;
+    }
+
+    public String getAcquisition_id() {
+        return acquisition_id;
+    }
+
+    public String getAcquisition_price() {
+        return acquisition_price;
+    }
+
+    public String getAcquisition_date() {
+        return acquisition_date;
+    }
+
+    public String getSupplier_name() {
+        return supplier_name;
+    }
+
+    public String getCopies_acquired() {
+        return copies_acquired;
+    }
+
+    public String getArchivist_id() {
+        return archivist_id;
+    }
+
+    public String getBranch_delivered() {
+        return branch_delivered;
     }
 }
