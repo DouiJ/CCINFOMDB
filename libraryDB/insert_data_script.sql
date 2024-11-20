@@ -1,28 +1,20 @@
 use library;
 
-INSERT INTO ref_address (address_id, address_line_1, address_line_2, city, province, region, zip_code)
+INSERT INTO branches (branch_id, full_address, phone_no)
 VALUES
-    ('A0001', 'Street 1', 'Building A', 'City1', 'Province1', 'Region1', '10001'),
-    ('A0002', 'Street 2', 'Building B', 'City2', 'Province2', 'Region2', '10002'),
-    ('A0003', 'Street 3', 'Building C', 'City3', 'Province3', 'Region3', '10003'),
-    ('A0004', 'Street 4', 'Building D', 'City4', 'Province4', 'Region4', '10004'),
-    ('A0005', 'Street 5', 'Building E', 'City5', 'Province5', 'Region5', '10005');
+    ('L0001', '123 Main St, City1, Province1, 10001', '1234567890123'),    -- Address 1
+    ('L0002', '456 Elm St, City2, Province2, 10002', '1234567890124'),    -- Address 2
+    ('L0003', '789 Oak St, City3, Province3, 10003', '1234567890125'),    -- Address 3
+    ('L0004', '101 Pine St, City4, Province4, 10004', '1234567890126'),   -- Address 4
+    ('L0005', '202 Maple St, City5, Province5, 10005', '1234567890127');  -- Address 5
 
-INSERT INTO branches (branch_id, address_id, phone_no)
+INSERT INTO employees (employee_id, last_name, first_name, job_id, age, phone_no, email, hire_date, full_address, branch_id)
 VALUES
-    ('L0001', 'A0001', '1234567890123'),
-    ('L0002', 'A0002', '1234567890124'),
-    ('L0003', 'A0003', '1234567890125'),
-    ('L0004', 'A0004', '1234567890126'),
-    ('L0005', 'A0005', '1234567890127');
-
-INSERT INTO employees (employee_id, last_name, first_name, job_id, age, phone_no, email, hire_date, address_id, branch_id)
-VALUES
-    ('E0001', 'Smith', 'John',   'M', 45, '9876543210123', 'john.smith@example.com',    '2020-01-01', 'A0001', 'L0001'),
-    ('E0002', 'Doe', 'Jane',     'A', 38, '9876543210124', 'jane.doe@example.com',      '2021-05-15', 'A0002', 'L0002'),
-    ('E0003', 'Brown', 'Emily',  'C', 29, '9876543210125', 'emily.brown@example.com',   '2022-09-10', 'A0003', 'L0003'),
-    ('E0004', 'Taylor', 'James', 'T', 33, '9876543210126', 'james.taylor@example.com',  '2023-03-20', 'A0004', 'L0004'),
-    ('E0005', 'Lee', 'Anna',     'S', 40, '9876543210127', 'anna.lee@example.com',      '2019-11-30', 'A0005', 'L0005');
+    ('E0001', 'Smith', 'John',   'M', 45, '9876543210123', 'john.smith@example.com',    '2020-01-01', '123 Main St, City1, Province1, 10001', 'L0001'),
+    ('E0002', 'Doe', 'Jane',     'A', 38, '9876543210124', 'jane.doe@example.com',      '2021-05-15', '456 Elm St, City2, Province2, 10002', 'L0002'),
+    ('E0003', 'Brown', 'Emily',  'C', 29, '9876543210125', 'emily.brown@example.com',   '2022-09-10', '789 Oak St, City3, Province3, 10003', 'L0003'),
+    ('E0004', 'Taylor', 'James', 'T', 33, '9876543210126', 'james.taylor@example.com',  '2023-03-20', '101 Pine St, City4, Province4, 10004', 'L0004'),
+    ('E0005', 'Lee', 'Anna',     'S', 40, '9876543210127', 'anna.lee@example.com',      '2019-11-30', '202 Maple St, City5, Province5, 10005', 'L0005');
 
 INSERT INTO patrons (patron_id, last_name, first_name, age, gender, phone_no, email, status)
 VALUES
@@ -88,7 +80,6 @@ VALUES
     ('B0018', '2023-05-06', '2023-05-16', NULL,         'O', 'I0006', 'P0001', 'E0003', 'A'),
     ('B0019', '2023-05-19', '2023-05-29', NULL,         'O', 'I0007', 'P0002', 'E0003', 'A'),
     ('B0020', '2023-05-20', '2023-05-30', '2023-06-05', 'R', 'I0010', 'P0005', 'E0003', 'A');
-
 
 INSERT INTO borrowing_fines (fine_id, borrow_id, clerk_id, fine_amount, payment_date, status)
 VALUES
