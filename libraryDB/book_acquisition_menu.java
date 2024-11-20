@@ -9,6 +9,8 @@ public class book_acquisition_menu {
     public book_acquisition_menu() {
     }
 
+    public void input
+
     public void inputBookAcquisitionInfo(book_acquisition_management bookAcq) {
         Scanner scanner = new Scanner(System.in);
         String temp;
@@ -16,9 +18,11 @@ public class book_acquisition_menu {
         scanner.nextLine();
         System.out.println("\nAcquisition date           : "); temp = scanner.nextLine(); bookAcq.setAcquisition_date(temp);
         System.out.println("Acquisition price          : "); temp = scanner.nextLine(); bookAcq.setAcquisition_price(temp);
-        System.out.println("Supplier_name          : "); temp = scanner.nextLine(); bookAcq.setSupplier_name(temp);
-        System.out.println("Supplier_name          : "); temp = scanner.nextLine(); bookAcq.setSupplier_name(temp);
-
+        System.out.println("Supplier name              : "); temp = scanner.nextLine(); bookAcq.setSupplier_name(temp);
+        System.out.println("Copies acquired            : "); temp = scanner.nextLine(); bookAcq.setCopies_acquired(temp);
+        System.out.println("Archivist ID               : "); temp = scanner.nextLine(); bookAcq.setArchivist_id(temp);
+        System.out.println("ISBN                       : "); temp = scanner.nextLine(); bookAcq.setIsbn(temp);
+        bookAcq.setBranch_delivered(currBranchID);
     }
 
     public int menu() {
@@ -27,9 +31,8 @@ public class book_acquisition_menu {
 
         //Objects
         book_acquisition_management bookAcq = new book_acquisition_management();
-
-
-
+        employee_record_management erm = new employee_record_management();
+        book_inventory_management bim = new book_inventory_management();
 
         while (true) {
             System.out.println("═══════════════════════════════════════════════════════════════");
@@ -47,7 +50,8 @@ public class book_acquisition_menu {
 
             switch (choice) {
                 case 1:
-                    getClass()
+                    inputBookAcquisitionInfo(bookAcq);
+                    bookAcq.add_Book_acquisition()
                     while (sb.sb_menu() != 0) {}
                     break;
                 case 2:

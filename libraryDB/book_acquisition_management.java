@@ -51,7 +51,7 @@ public class book_acquisition_management {
             pstmt.setString(2, acquisition_date);
             pstmt.setDouble(3, acquisition_price);
             pstmt.setString(4, supplier_name);
-            pstmt.setInt(5, (copies_acquired));
+            pstmt.setInt(5, (Integer.parseInt(copies_acquired));
             pstmt.setString(6, archivist_id);
             pstmt.setString(7, isbn);
             pstmt.setString(8, branch_delivered);
@@ -181,7 +181,7 @@ public class book_acquisition_management {
         this.acquisition_date = acquisition_date;
     }
 
-    public void setAcquisition_price(double acquisition_price) {
+    public void setAcquisition_price(String acquisition_price) {
         this.acquisition_price = acquisition_price;
     }
 
@@ -189,7 +189,7 @@ public class book_acquisition_management {
         this.supplier_name = supplier_name;
     }
 
-    public void setCopies_acquired(int copies_acquired) {
+    public void setCopies_acquired(String copies_acquired) {
         this.copies_acquired = copies_acquired;
     }
 
