@@ -17,7 +17,7 @@ public class patron_management {
         patron_id = "";
         last_name = "";
         first_name = "";
-        age = 0;
+        age = "";
         gender = null;
         phone_no = "";
         email = "";
@@ -49,11 +49,11 @@ public class patron_management {
         this.first_name = first_name;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
