@@ -27,15 +27,15 @@ public class branch_management {
             ResultSet resultSet = statement.executeQuery("SELECT MAX(branch_id) FROM branches");
 
             //Get the highest id value
-            String maxBranchID = "B0000";
+            String maxBranchID = "L0000";
             if (resultSet.next()) {
                 maxBranchID = resultSet.getString(1);
                 if (resultSet.wasNull())
-                    maxBranchID = "B0000";
+                    maxBranchID = "L0000";
             }
 
             int branchIDNumber = Integer.parseInt(maxBranchID.substring(1)) + 1; //Extract the number part only and add 1
-            this.branch_id = "B" + String.format("%04d", branchIDNumber);
+            this.branch_id = "L" + String.format("%04d", branchIDNumber);
 
             String sql = "INSERT INTO Branches (branch_id, full_address, phone_no) VALUES (?, ?, ?)";
             PreparedStatement pstmt = connection.prepareStatement(sql);

@@ -5,7 +5,6 @@ import java.sql.*;
 public class book_detail_management {
 
     private String isbn;
-
     private String title;
     private String price;
     private String author_last_name;
