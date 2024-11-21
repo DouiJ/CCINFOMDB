@@ -32,7 +32,6 @@ public class employee_record_management {
         //branch_id  // Set to current selected branch ID
     }
 
-
     public String getEmployeeId() {
         return employee_id;
     }
