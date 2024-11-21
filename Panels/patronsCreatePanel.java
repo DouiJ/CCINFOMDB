@@ -110,7 +110,7 @@ public class patronsCreatePanel extends JPanel {
         gbc.gridy = 6;
         createButton = new JButton("Create");
         createButton.setFont(new Font("Bookman Old Style", Font.BOLD, 14));
-
         this.add(createButton, gbc);
+
     }
 }
