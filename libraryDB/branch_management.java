@@ -16,7 +16,7 @@ public class branch_management {
         this.phone_no = "";
     }
 
-    public String add_Branch() {
+    public int add_Branch() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -44,20 +44,24 @@ public class branch_management {
             pstmt.setString(2, full_address);
             pstmt.setString(3, phone_no);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was created");
-
-            resultSet.close();
+            int rowsAdded = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
-            return branch_id;
+
+            if (rowsAdded > 0) {
+                System.out.println("Record successfully created.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully created.");
+                return 0;
+            }
 
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
-            return null;
+            return 0;
         } catch (Exception e) {
             System.out.println("Unexpected error: " + e.getMessage());
-            return null;
+            return 0;
         }
     }
 
@@ -107,12 +111,17 @@ public class branch_management {
             pstmt.setString(2, phone_no);
             pstmt.setString(3, branch_id);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was updated");
-
+            int rowsUpdated = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
-            return 1;
+
+            if (rowsUpdated > 0) {
+                System.out.println("Record successfully updated.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully updated.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -135,12 +144,17 @@ public class branch_management {
 
             pstmt.setString(1, branch_id);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was updated");
-
+            int rowsDeleted = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
-            return 1;
+
+            if (rowsDeleted > 0) {
+                System.out.println("Record successfully deleted.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully deleted.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;

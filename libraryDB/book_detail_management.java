@@ -51,7 +51,7 @@ public class book_detail_management {
         this.author_last_name = author_last_name;
     }
 
-    public String add_Book_details() {
+    public int add_Book_details() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -67,18 +67,23 @@ public class book_detail_management {
             pstmt.setString(4, author_last_name);
             pstmt.setString(5, author_first_name);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was created");
-
+            int rowsAdded = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
-            return isbn;
+
+            if (rowsAdded > 0) {
+                System.out.println("Record successfully created.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully created.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
-            return null;
+            return 0;
         } catch (Exception e) {
             System.out.println("Unexpected error: " + e.getMessage());
-            return null;
+            return 0;
         }
     }
 
@@ -97,12 +102,17 @@ public class book_detail_management {
             pstmt.setString(4, author_first_name);
             pstmt.setString(5, isbn);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was updated");
-
+            int rowsUpdated = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
-            return 1;
+
+            if (rowsUpdated > 0) {
+                System.out.println("Record successfully updated.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully updated.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -123,12 +133,17 @@ public class book_detail_management {
             PreparedStatement pstmt = connection.prepareStatement("DELETE FROM book_details WHERE isbn=?");
             pstmt.setString(1, isbn);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was deleted");
-
+            int rowsDeleted = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
-            return 1;
+
+            if (rowsDeleted > 0) {
+                System.out.println("Record successfully deleted.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully deleted.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;

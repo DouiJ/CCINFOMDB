@@ -32,7 +32,6 @@ public class employee_record_management {
         //branch_id  // Set to current selected branch ID
     }
 
-
     public String getEmployeeId() {
         return employee_id;
     }
@@ -143,15 +142,19 @@ public class employee_record_management {
             pstmt.setString(7, email);
             pstmt.setDate(8, hire_date);
             pstmt.setString(9, full_address);
+            pstmt.setString(10, branch_id);
 
-            // Curr Branch INDEX 10
-
-            pstmt.executeUpdate();
-            System.out.println("Record was created");
-
+            int rowsAdded = pstmt.executeUpdate();
             pstmt.close();
             conn.close();
-            return 1;
+
+            if (rowsAdded > 0) {
+                System.out.println("Record successfully created.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully created.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -180,12 +183,17 @@ public class employee_record_management {
             pstmt.setString(9, branch_id);  // CURRENT BRANCH TO BE FIXED
             pstmt.setString(10, employee_id);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was updated");
-
+            int rowsUpdated = pstmt.executeUpdate();
             pstmt.close();
             conn.close();
-            return 1;
+
+            if (rowsUpdated > 0) {
+                System.out.println("Record successfully updated.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully updated.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -204,12 +212,17 @@ public class employee_record_management {
             PreparedStatement pstmt = conn.prepareStatement("DELETE FROM Employees WHERE employee_id=?");
             pstmt.setString(1, employee_id);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was deleted");
-
+            int rowsDeleted = pstmt.executeUpdate();
             pstmt.close();
             conn.close();
-            return 1;
+
+            if (rowsDeleted > 0) {
+                System.out.println("Record successfully deleted.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully deleted.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;

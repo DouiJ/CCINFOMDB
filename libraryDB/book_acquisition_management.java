@@ -11,6 +11,7 @@ public class book_acquisition_management {
     private String archivist_id;
     private String isbn;
     private String branch_delivered;
+    private String status;
 
     public book_acquisition_management() {
         this.acquisition_id = "";
@@ -21,9 +22,10 @@ public class book_acquisition_management {
         this.archivist_id = "";
         this.isbn = "";
         this.branch_delivered = "";
+        this.status = "";
     }
 
-    public String add_Book_acquisition() {
+    public int add_Book_acquisition() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -33,18 +35,18 @@ public class book_acquisition_management {
             ResultSet resultSet = statement.executeQuery("SELECT MAX(acquisition_id) FROM Book_Acquisitions");
 
             // Get the highest id value
-            String maxAcquisitionID = "A0000";
+            String maxAcquisitionID = "Q0000";
             if (resultSet.next()) {
                 maxAcquisitionID = resultSet.getString(1);
                 if (resultSet.wasNull())
-                    maxAcquisitionID = "A0000";
+                    maxAcquisitionID = "Q0000";
             }
 
             int aquisitionIDNumber = Integer.parseInt(maxAcquisitionID.substring(1)) + 1; // Extract the number part
                                                                                           // only and add 1
-            this.acquisition_id = "B" + String.format("%04d", aquisitionIDNumber);
+            this.acquisition_id = "Q" + String.format("%04d", aquisitionIDNumber);
 
-            String sql = "INSERT INTO Book_Acquisitions (acquisition_id, acquisition_date, supplier_name, acquisition_price, copies_acquired, archivist_id, isbn, branch_delivered) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Book_Acquisitions (acquisition_id, acquisition_date, supplier_name, acquisition_price, copies_acquired, archivist_id, isbn, branch_delivered, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
             pstmt.setString(1, acquisition_id);
@@ -55,21 +57,26 @@ public class book_acquisition_management {
             pstmt.setString(6, archivist_id);
             pstmt.setString(7, isbn);
             pstmt.setString(8, branch_delivered);
+            pstmt.setString(9, "A");
 
-            pstmt.executeUpdate();
-            System.out.println("Record was created");
-
+            int rowsAdded = pstmt.executeUpdate();
             pstmt.close();
-            resultSet.close();
             connection.close();
-            return acquisition_id;
+
+            if (rowsAdded > 0) {
+                System.out.println("Record successfully created.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully created.");
+                return 0;
+            }
 
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
-            return null;
+            return 0;
         } catch (Exception e) {
             System.out.println("Unexpected error: " + e.getMessage());
-            return null;
+            return 0;
         }
     }
 
@@ -84,21 +91,27 @@ public class book_acquisition_management {
             String sql = "UPDATE Book_Acquisitions SET acquisition_date=?, supplier_name=?, acquisition_price=?, copies_acquired=?, archivist_id=?, isbn=?, branch_delivered=? WHERE acquisition_id=?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
-            pstmt.setString(1, acquisition_id);
-            pstmt.setString(2, acquisition_date);
-            pstmt.setString(3, supplier_name);
-            pstmt.setDouble(4, Double.parseDouble(acquisition_price));
-            pstmt.setInt(5, Integer.parseInt(copies_acquired));
-            pstmt.setString(6, archivist_id);
-            pstmt.setString(7, isbn);
-            pstmt.setString(8, branch_delivered);
+            pstmt.setString(1, acquisition_date);
+            pstmt.setString(2, supplier_name);
+            pstmt.setDouble(3, Double.parseDouble(acquisition_price));
+            pstmt.setInt(4, Integer.parseInt(copies_acquired));
+            pstmt.setString(5, archivist_id);
+            pstmt.setString(6, isbn);
+            pstmt.setString(7, branch_delivered);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was updated");
+            pstmt.setString(8, acquisition_id);
 
+            int rowsUpdated = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
-            return 1;
+
+            if (rowsUpdated > 0) {
+                System.out.println("Record successfully updated.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully updated.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -108,24 +121,30 @@ public class book_acquisition_management {
         }
     }
 
-    public int delete_Book_acqusition() {
+    public int cancel_Book_acqusition() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
                 "3d6%vQmT")) {
             System.out.println("Connection to DB Successful.");
 
-            String sql = "DELETE FROM Book_Acquisitions WHERE acquisition_id=?";
+            String sql = "UPDATE Book_Acquisitions SET status=? WHERE acquisition_id=?";
             PreparedStatement pstmt = connection.prepareStatement(sql);
 
-            pstmt.setString(1, acquisition_id);
+            pstmt.setString(1, "C");
+            pstmt.setString(2, acquisition_id);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was deleted");
-
+            int rowsCancelled = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
-            return 1;
+
+            if (rowsCancelled > 0) {
+                System.out.println("Record successfully cancelled.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully cancelled.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -158,6 +177,7 @@ public class book_acquisition_management {
                 archivist_id = resultSet.getString("archivist_id");
                 isbn = resultSet.getString("isbn");
                 branch_delivered = resultSet.getString("branch_delivered");
+                status = resultSet.getString("status");
                 recordcount++;
             }
 
