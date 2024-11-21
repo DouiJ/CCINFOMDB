@@ -127,6 +127,7 @@ public class book_borrowing_transaction {
             if (rs.next())
                 overdueCount = rs.getInt("overdue_count");
 
+            rs.close();
             pstmt.close();
             conn.close();
 
@@ -165,12 +166,12 @@ public class book_borrowing_transaction {
             Statement stmt = conn.createStatement();
             rs = stmt.executeQuery("SELECT MAX(borrow_id) FROM Borrowing_History");
 
-            String maxBorrowNo = "B0000";
+            String maxBorrowNo = "H0000";
             if (rs.next())
                 maxBorrowNo = rs.getString(1);
 
             int borrowNoNumber = Integer.parseInt(maxBorrowNo.substring(3)) + 1;
-            borrow_id = "B" + String.format("%04d", borrowNoNumber);
+            borrow_id = "H" + String.format("%04d", borrowNoNumber);
 
             // Insert borrowing record
             PreparedStatement pstmt = conn.prepareStatement(
@@ -191,13 +192,18 @@ public class book_borrowing_transaction {
             pstmt.setString(7, clerk_id);
             pstmt.setString(8, "A");  // Available status
 
-            pstmt.executeUpdate();
-            System.out.println("Borrowing transaction created successfully");
-
+            int rowsAdded = pstmt.executeUpdate();
+            rs.close();
             pstmt.close();
             conn.close();
-            return 1;
 
+            if (rowsAdded > 0) {
+                System.out.println("Record successfully created.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully created.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -235,6 +241,7 @@ public class book_borrowing_transaction {
 
             System.out.println("Return processed successfully.");
 
+            rs.close();
             pstmt.close();
             conn.close();
             return 1;
@@ -276,6 +283,10 @@ public class book_borrowing_transaction {
             pstmt.setString(6, borrow_id);
 
             int rowsAffected = pstmt.executeUpdate();
+
+            rs.close();
+            pstmt.close();
+            conn.close();
 
             if (rowsAffected > 0) {
                 System.out.println("Borrowing record updated successfully");
@@ -352,14 +363,13 @@ public class book_borrowing_transaction {
                 clerk_id = rs.getString("clerk_id");
                 transaction_status = rs.getString("status");
 
-                pstmt.close();
-                conn.close();
-                return 1;
-            }
 
+            }
+            
+            rs.close();
             pstmt.close();
             conn.close();
-            return 0;
+            return 1;
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
