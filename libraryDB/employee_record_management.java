@@ -145,6 +145,7 @@ public class employee_record_management {
             pstmt.setString(10, branch_id);
 
             int rowsAdded = pstmt.executeUpdate();
+            rs.close();
             pstmt.close();
             conn.close();
 
@@ -257,9 +258,10 @@ public class employee_record_management {
                 recordcount++;
             }
 
+            rs.close();
             pstmt.close();
             conn.close();
-            return 1;
+            return recordcount;
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
