@@ -174,6 +174,8 @@ public class book_detail_management {
             }
 
             rs.close();
+            pstmt.close();
+            connection.close();
             return recordcount;
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());

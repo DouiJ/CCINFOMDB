@@ -11,7 +11,6 @@ public class patron_management {
     private String gender;     // ENUM ("M", "F")
     private String phone_no;   // VARCHAR(13)
     private String email;      // VARCHAR(45)
-    private String status;     // ENUM ("'A', 'C'")
 
     public patron_management() {
         patron_id = "";
@@ -21,7 +20,6 @@ public class patron_management {
         gender = null;
         phone_no = "";
         email = "";
-        status = null;
     }
 
     // GETTERS AND SETTERS
@@ -81,51 +79,27 @@ public class patron_management {
         this.email = email;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public static String generatePatronId() {
-        String query = "SELECT patron_id FROM patrons ORDER BY patron_id ASC";
-
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(query)) {
-
-            int expectedId = 1;
-            while (rs.next()) {
-                String currentId = rs.getString("patron_id");
-                int currentIdNumber = Integer.parseInt(currentId.substring(1));
-                if (currentIdNumber != expectedId) {
-                    break;
-                }
-                expectedId++;
-            }
-            return "P" + String.format("%04d", expectedId);
-        } catch (SQLException e) {
-            System.out.println("Database error: " + e.getMessage());
-            return null;
-        } catch (Exception e) {
-            System.out.println("Unexpected error: " + e.getMessage());
-            return null;
-        }
-    }
-
     public int add_patron() {
-        try {
-            // Connect to the MySQL Database
-            Connection conn;
-            conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+        try (Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://127.0.0.1:3306/library",
+                "root",
+                "3d6%vQmT")
+        ) {
             System.out.println("Connection to DB Successful.");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("SELECT MAX(patron_id) FROM Patrons");
 
-            String patron_id = generatePatronId();
+            String maxID = "P0000";
+            if (resultSet.next()) {
+                maxID = resultSet.getString(1);
+                if (resultSet.wasNull())
+                    maxID = "P0000";
+            }
 
-            PreparedStatement pstmt = conn.prepareStatement("INSERT INTO Patrons (patron_id, last_name, first_name, age, gender, phone_no, email, status) VALUES (?,?,?,?,?,?,?,?)");
+            int idNumber = Integer.parseInt(maxID.substring(1)) + 1;
+            this.patron_id = "P" + String.format("%04d", idNumber);
+
+            PreparedStatement pstmt = connection.prepareStatement("INSERT INTO Patrons (patron_id, last_name, first_name, age, gender, phone_no, email) VALUES (?,?,?,?,?,?,?)");
             pstmt.setString(1, patron_id);
             pstmt.setString(2, last_name);
             pstmt.setString(3, first_name);
@@ -133,14 +107,18 @@ public class patron_management {
             pstmt.setString(5, gender);
             pstmt.setString(6, phone_no);
             pstmt.setString(7, email);
-            pstmt.setString(8, "A");
 
-            System.out.println("Record was created.");
-            pstmt.executeUpdate();
-
+            int rowsAdded = pstmt.executeUpdate();
             pstmt.close();
-            conn.close();
-            return 1;
+            connection.close();
+
+            if (rowsAdded > 0) {
+                System.out.println("Record successfully created.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully created.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -167,12 +145,17 @@ public class patron_management {
             pstmt.setString(6, email);
             pstmt.setString(7, patron_id);
 
-            System.out.println("Record was updated.");
-            pstmt.executeUpdate();
-
+            int rowsUpdated = pstmt.executeUpdate();
             pstmt.close();
             conn.close();
-            return 1;
+
+            if (rowsUpdated > 0) {
+                System.out.println("Record successfully updated.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully updated.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -182,25 +165,28 @@ public class patron_management {
         }
     }
 
-    public int cancel_patron() {
-        try {
-            // Connect to the MySQL Database
-            Connection conn;
-            conn = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
+    public int delete_patron() {
+        try (Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://127.0.0.1:3306/library",
+                "root",
+                "3d6%vQmT"
+        )) {
             System.out.println("Connection to DB Successful.");
 
-            PreparedStatement pstmt = conn.prepareStatement(
-                    "UPDATE from Patrons SET status = ? WHERE patron_id = ?");
-            pstmt.setString(1, "C");
-            pstmt.setString(2, patron_id);
+            PreparedStatement pstmt = connection.prepareStatement("DELETE FROM patrons WHERE patron_id=?");
+            pstmt.setString(1, patron_id);
 
-            pstmt.executeUpdate();
-            System.out.println("Record successfully deleted.");
-
+            int rowsDeleted = pstmt.executeUpdate();
             pstmt.close();
-            conn.close();
-            return 1;
+            connection.close();
+
+            if (rowsDeleted > 0) {
+                System.out.println("Record successfully deleted.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully deleted.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -211,10 +197,12 @@ public class patron_management {
     }
 
     public int get_patron() {
+        int recordcount = 0;
+
         try {
             // Connect to the MySQL Database
-            Connection conn;
-            conn = DriverManager.getConnection(
+
+            Connection conn = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/library?useTimezone=true&serverTimezone=UTC&user=root&password=3d6%vQmT");
             System.out.println("Connection to DB Successful.");
 
@@ -230,13 +218,13 @@ public class patron_management {
                 gender = rs.getString("gender");
                 phone_no = rs.getString("phone_no");
                 email = rs.getString("email");
-                status = rs.getString("status");
-                System.out.println("Record was retrieved.");
+                recordcount++;
             }
 
+            rs.close();
             pstmt.close();
             conn.close();
-            return 1;
+            return recordcount;
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
