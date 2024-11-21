@@ -11,7 +11,9 @@ public class Main extends JFrame {
         this.setLayout(null);
         this.setResizable(false);
 
-        employeesViewPanel file = new employeesViewPanel();
+        bookAcquisitionCreatePanel file = new bookAcquisitionCreatePanel();
+        //updateBorrowingPanel file = new updateBorrowingPanel();
+        //patronsCreatePanel file = new patronsCreatePanel();
         file.setBounds(0, 0, 400, 400);
 
         this.add(file);
