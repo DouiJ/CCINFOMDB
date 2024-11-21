@@ -181,8 +181,8 @@ public class book_acquisition_management {
                 recordcount++;
             }
 
-            pstmt.close();
             resultSet.close();
+            pstmt.close();
             connection.close();
             return recordcount;
         } catch (SQLException e) {
