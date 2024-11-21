@@ -147,7 +147,7 @@ public class employeesViewPanel extends JPanel {
         gbc.gridx = 1;
         gbc.gridy = 8;
         fullAddressValueLabel = new JLabel("TEXT");
-        fullAddressValueLabel.setFont(new Font("Bookman Old Style", Font.PLAIN, 11));
+        fullAddressValueLabel.setFont(new Font("Bookman Old Style", Font.PLAIN, 8));
         this.add(fullAddressValueLabel, gbc);
 
         // Branch_ID
