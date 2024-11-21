@@ -16,6 +16,30 @@ public class branch_management {
         this.phone_no = "";
     }
 
+    public String getBranch_id() {
+        return branch_id;
+    }
+
+    public String getFull_address() {
+        return full_address;
+    }
+
+    public String getPhone_no() {
+        return phone_no;
+    }
+
+    public void setBranch_id(String branch_id) {
+        this.branch_id = branch_id;
+    }
+
+    public void setFull_address(String full_address) {
+        this.full_address = full_address;
+    }
+
+    public void setPhone_no(String phone_no) {
+        this.phone_no = phone_no;
+    }
+
     public int add_Branch() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
