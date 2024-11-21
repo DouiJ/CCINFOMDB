@@ -25,7 +25,7 @@ public class book_acquisition_management {
         this.status = "";
     }
 
-    public String add_Book_acquisition() {
+    public int add_Book_acquisition() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -59,20 +59,24 @@ public class book_acquisition_management {
             pstmt.setString(8, branch_delivered);
             pstmt.setString(9, "A");
 
-            pstmt.executeUpdate();
-            System.out.println("Record was created");
-
+            int rowsAdded = pstmt.executeUpdate();
             pstmt.close();
-            resultSet.close();
             connection.close();
-            return acquisition_id;
+
+            if (rowsAdded > 0) {
+                System.out.println("Record successfully created.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully created.");
+                return 0;
+            }
 
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
-            return null;
+            return 0;
         } catch (Exception e) {
             System.out.println("Unexpected error: " + e.getMessage());
-            return null;
+            return 0;
         }
     }
 
@@ -97,16 +101,15 @@ public class book_acquisition_management {
 
             pstmt.setString(8, acquisition_id);
 
-            pstmt.executeUpdate();
             int rowsUpdated = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
 
             if (rowsUpdated > 0) {
-                System.out.println("Review status updated successfully.");
+                System.out.println("Record successfully updated.");
                 return 1;
             } else {
-                System.out.println("No review found for this borrowing number.");
+                System.out.println("Record unsuccessfully updated.");
                 return 0;
             }
         } catch (SQLException e) {
@@ -131,16 +134,15 @@ public class book_acquisition_management {
             pstmt.setString(1, "C");
             pstmt.setString(2, acquisition_id);
 
-            pstmt.executeUpdate();
-            int rowsUpdated = pstmt.executeUpdate();
+            int rowsCancelled = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
 
-            if (rowsUpdated > 0) {
-                System.out.println("Review status updated successfully.");
+            if (rowsCancelled > 0) {
+                System.out.println("Record successfully cancelled.");
                 return 1;
             } else {
-                System.out.println("No review found for this borrowing number.");
+                System.out.println("Record unsuccessfully cancelled.");
                 return 0;
             }
         } catch (SQLException e) {
@@ -175,6 +177,7 @@ public class book_acquisition_management {
                 archivist_id = resultSet.getString("archivist_id");
                 isbn = resultSet.getString("isbn");
                 branch_delivered = resultSet.getString("branch_delivered");
+                status = resultSet.getString("status");
                 recordcount++;
             }
 
