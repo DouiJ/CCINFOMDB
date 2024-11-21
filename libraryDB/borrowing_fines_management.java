@@ -22,7 +22,7 @@ public class borrowing_fines_management {
         this.status = "";
     }
 
-    public String add_Borrowing_fines() {
+    public int add_Borrowing_fines() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -41,7 +41,7 @@ public class borrowing_fines_management {
             }
 
             int iDNumber = Integer.parseInt(maxID.substring(1)) + 1; //Extract the number part only and add 1
-            this.fine_id = "B" + String.format("%04d", iDNumber);
+            this.fine_id = "F" + String.format("%04d", iDNumber);
 
             String sql = "INSERT INTO Borrowing_Fines (fine_id, fine_amount, payment_date, borrow_id, clerk_id, status) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement pstmt = connection.prepareStatement(sql);
@@ -53,22 +53,28 @@ public class borrowing_fines_management {
             pstmt.setString(5, clerk_id);
             pstmt.setString(6, status);
 
-            pstmt.executeUpdate();
-            System.out.println("Record was created");
-
+            int rowsAdded = pstmt.executeUpdate();
+            resultSet.close();
             pstmt.close();
             connection.close();
-            return fine_id;
+
+            if (rowsAdded > 0) {
+                System.out.println("Record successfully created.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully created.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
-            return null;
+            return 0;
         } catch (Exception e) {
             System.out.println("Unexpected error: " + e.getMessage());
-            return null;
+            return 0;
         }
     }
 
-    public int update_Branch() {
+    public int update_Borrowing_fines() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -89,9 +95,17 @@ public class borrowing_fines_management {
             pstmt.executeUpdate();
             System.out.println("Record was updated");
 
+            int rowsUpdated = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
-            return 1;
+
+            if (rowsUpdated > 0) {
+                System.out.println("Record successfully updated.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully updated.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -101,7 +115,7 @@ public class borrowing_fines_management {
         }
     }
 
-    public int cancel_Book_details() {
+    public int cancel_Borrowing_fines() {
         try (Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://127.0.0.1:3306/library",
                 "root",
@@ -115,12 +129,17 @@ public class borrowing_fines_management {
             pstmt.setString(1, "C");
             pstmt.setString(2, fine_id);
 
-            pstmt.executeUpdate();
-            System.out.println("Transaction was cancelled");
-
+            int rowsCancelled = pstmt.executeUpdate();
             pstmt.close();
             connection.close();
-            return 1;
+
+            if (rowsCancelled > 0) {
+                System.out.println("Record successfully cancelled.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully cancelled.");
+                return 0;
+            }
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
             return 0;
@@ -130,7 +149,7 @@ public class borrowing_fines_management {
         }
     }
 
-    public int get_Book_details() {
+    public int get_Borrowing_fines() {
         int recordcount = 0;
 
         try (Connection connection = DriverManager.getConnection(
@@ -152,7 +171,10 @@ public class borrowing_fines_management {
                 recordcount++; // Only one record expected for a unique ISBN
             }
 
+
             rs.close();
+            pstmt.close();
+            connection.close();
             return recordcount;
         } catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
