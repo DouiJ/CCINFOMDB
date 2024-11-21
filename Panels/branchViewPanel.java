@@ -35,13 +35,13 @@ public class branchViewPanel extends JPanel {
         gbc.gridx = 0;
         gbc.gridy = 1;
         fullAddressLabel = new JLabel("Full_Address:");
-        fullAddressLabel.setFont(new Font("Bookman Old Style", Font.BOLD, 12));
+        fullAddressLabel.setFont(new Font("Bookman Old Style", Font.BOLD, 16));
         this.add(fullAddressLabel, gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 1;
         fullAddressValueLabel = new JLabel("TEXT");
-        fullAddressValueLabel.setFont(new Font("Bookman Old Style", Font.PLAIN, 16));
+        fullAddressValueLabel.setFont(new Font("Bookman Old Style", Font.PLAIN, 12));
         this.add(fullAddressValueLabel, gbc);
 
         // Phone No
