@@ -1,3 +1,5 @@
+package libraryDB.reports;
+
 import javax.swing.*;
 
 public class Main extends JFrame {
@@ -10,7 +12,7 @@ public class Main extends JFrame {
         this.setLayout(null);
         this.setResizable(false);
 
-        branch_crudPanel file = new branch_crudPanel();
+        patronActivityPanel2 file = new patronActivityPanel2();
         file.setBounds(0, 0, 400, 400);
 
         this.add(file);
