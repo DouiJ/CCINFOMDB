@@ -633,26 +633,24 @@ public class Model {
     }
 
     public ArrayList<String> getReviewSummary() {
-        // SQL query to get the total reviews for a patron, total reviews for a book, and average rating for the book
+        // SQL query to get the total reviews for a patron, and the average rating for the books reviewed by the patron
         String query = """
         SELECT 
             p.patron_id, 
             COUNT(DISTINCT br.rating_id) AS total_reviews_by_patron,
-            bd.isbn AS book_id, 
-            COUNT(br.rating_id) AS total_reviews_for_book,
-            AVG(br.rating_score) AS avg_rating_for_book
+            AVG(br.rating_score) AS avg_rating_for_patron
         FROM 
             Book_Rating br
-        JOIN 
+        LEFT JOIN 
             Borrowing_History bh ON br.borrow_id = bh.borrow_id
-        JOIN 
+        LEFT JOIN 
             Patrons p ON bh.patron_id = p.patron_id
-        JOIN 
-            Book_Details bd ON bh.book_id = bd.isbn
+        WHERE 
+            br.rating_score IS NOT NULL  -- Ensuring we're only counting valid ratings
         GROUP BY 
-            p.patron_id, bd.isbn
+            p.patron_id
         ORDER BY 
-            p.patron_id, bd.isbn;
+            p.patron_id;
     """;
 
         ArrayList<String> results = new ArrayList<>();
@@ -660,21 +658,27 @@ public class Model {
         try (PreparedStatement pstmt = connection.prepareStatement(query);
              ResultSet rs = pstmt.executeQuery()) {
 
+            // Debugging: print the query results to check what's being returned
+            int resultCount = 0;
+
             while (rs.next()) {
-                // Patron ID and the total number of reviews made by the patron
                 String patronSummary = "Patron ID: " + rs.getString("patron_id") +
-                        " Total Reviews: " + rs.getInt("total_reviews_by_patron");
-
-                // Book ID, total number of reviews for the book, and the average rating for the book
-                String bookSummary = "Book ID: " + rs.getString("book_id") +
-                        " Total Reviews: " + rs.getInt("total_reviews_for_book") +
-                        " Avg Rating: " + rs.getDouble("avg_rating_for_book");
-
-                // Combine both results into one string and add to the list
-                results.add(patronSummary + ", " + bookSummary);
+                        " Total Reviews: " + rs.getInt("total_reviews_by_patron") +
+                        " Avg Rating: " + rs.getDouble("avg_rating_for_patron");
+                // Add patron summary to the results
+                results.add(patronSummary);
+                resultCount++;
             }
+
+            // Debugging: check how many results were fetched
+            System.out.println("Total results fetched: " + resultCount);
+
         } catch (SQLException e) {
             System.err.println("Error while fetching review summary: " + e.getMessage());
+        }
+
+        if (results.isEmpty()) {
+            System.out.println("No data found. Please check the query and data.");
         }
 
         return results;  // Return ArrayList of strings
