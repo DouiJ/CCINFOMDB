@@ -12,7 +12,7 @@ public class book_inventory_management {
         this.connection = connection;
     }
 
-    public int add_Book(String isbn, String branch_id) {
+    public int add_Book(String isbn, String branch_id, String acquisition_id) {
         String inventory_id;
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT MAX(inventory_id) FROM books_inventory")) {
@@ -31,10 +31,11 @@ public class book_inventory_management {
             long idNumber = Integer.parseInt(maxID.substring(1)) + 1;
             inventory_id = "I" + String.format("%04d", idNumber);
 
-            try (PreparedStatement pstmt = connection.prepareStatement("INSERT INTO books_inventory (inventory_id, isbn, branch_id) VALUES (?, ?, ?)")) {
+            try (PreparedStatement pstmt = connection.prepareStatement("INSERT INTO books_inventory (inventory_id, isbn, branch_id, acquisition_id) VALUES (?, ?, ?,?)")) {
                 pstmt.setString(1, inventory_id);
                 pstmt.setString(2, isbn);
                 pstmt.setString(3, branch_id);
+                pstmt.setString(4, acquisition_id);
 
                 int rowsAdded = pstmt.executeUpdate();
 

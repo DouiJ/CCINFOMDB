@@ -6,18 +6,29 @@ import javax.swing.text.*;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class reports_listPanel extends JPanel {
+/**
+ * The `mainPanel` class represents the main user interface panel for managing hotels.
+ * This panel displays a list of hotels and provides buttons for creating, booking, and deleting hotels.
+ */
+public class review_listPanel extends JPanel {
 
     // List to hold dynamically created JTextPane components
     public ArrayList<JTextPane> textBoxList;
+    public JButton addButton;
 
-    // Panel containing the list of reports
-    public JPanel list;
+    // Panel containing the list of hotels
+    public JPanel list;;
 
     /**
-     * Constructs a `reports_listPanel` instance and initializes its components.
+     * Constructs a `mainPanel` instance and initializes its components.
+     * The panel is designed to display:
+     * <ul>
+     *   <li>A list of hotels</li>
+     *   <li>Buttons to create, delete, and book hotels</li>
+     * </ul>
+     * The layout and component settings are configured in this constructor.
      */
-    public reports_listPanel() {
+    public review_listPanel() {
         // Initialize the list of text boxes
         this.textBoxList = new ArrayList<>();
 
@@ -26,12 +37,12 @@ public class reports_listPanel extends JPanel {
         this.setBackground(Color.WHITE);
 
         // Create and configure the label for displaying the list title
-        JLabel label = new JLabel("REPORTS");
+        JLabel label = new JLabel("REVIEW LIST");
         label.setFont(new Font("Bookman Old Style", Font.PLAIN, 12));
         label.setBounds(11, 15, 150, 20);
         this.add(label);
 
-        // Create and configure the panel for displaying the list of reports
+        // Create and configure the panel for displaying the list of hotels
         list = new JPanel();
         list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
         list.setBackground(Color.WHITE);
@@ -44,14 +55,9 @@ public class reports_listPanel extends JPanel {
             }
         });
         this.add(scrollPane);
+
     }
 
-    /**
-     * Creates a new JTextPane with the specified title and adds it to the report list.
-     * Ensures proper text wrapping and allows for scrolling if needed.
-     *
-     * @param title The title to set in the newly created JTextPane
-     */
     public void createTextBox(String title) {
         JTextPane textBox = getjTextPane(title);
         textBox.setFont(new Font("Bookman Old Style", Font.PLAIN, 15));

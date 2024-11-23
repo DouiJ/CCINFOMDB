@@ -33,7 +33,6 @@ public class book_acquisition_management {
             int acquisitionIDNumber = Integer.parseInt(maxAcquisitionID.substring(1)) + 1;
             String acquisition_id = "Q" + String.format("%04d", acquisitionIDNumber);
 
-
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             java.util.Date utilDate = df.parse(acquisition_date);
             java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
@@ -60,7 +59,7 @@ public class book_acquisition_management {
                 System.out.println("Record successfully created.");
 
                 for (int i=0; i<Integer.parseInt(copies_acquired); i++) {
-                    book.add_Book(isbn, branch_delivered);
+                    book.add_Book(isbn, branch_delivered, acquisition_id);
                 }
 
                 return 1;

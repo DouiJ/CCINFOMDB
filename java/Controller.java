@@ -3,8 +3,6 @@ import tablesInfo.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.sql.ResultSet;
-import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -522,9 +520,107 @@ public class Controller {
             view.moveToFront(view.fines_list);
         });
 
+        view.simulate.bookReview.addActionListener(_-> {
 
-        view.main.reportsButton.addActionListener(e -> {
-            // Create a new dialog or panel that will host the reports
+            view.borrowing_list_review.list.removeAll();
+
+            for (String e : model.getUnratedBorrowIds())  {
+                view.borrowing_list_review.createTextBox(e);
+            }
+
+            view.moveToFront(view.borrowing_list_review);
+
+
+        });
+
+        view.simulate.viewbookReview.addActionListener(_-> {
+
+            view.review_list.list.removeAll();
+
+            for (String e : model.getAllReviews())  {
+                view.review_list.createTextBox(e);
+            }
+
+            view.moveToFront(view.review_list);
+        });
+
+        view.add_review.createButton.addActionListener(_-> {
+
+            model.review.setBorrow_id(currentBorrowingId);
+            model.review.setRating_score(view.add_review.scoreTextField.getText());
+            model.review.setRating_comment(view.add_review.commentTextField.getText());
+            model.review.create_Review();
+
+            view.goHome(view.main);
+            view.returnButton.setVisible(false);
+            view.homeButton.setVisible(false);
+        });
+
+        view.manage_fines.paidButton.addActionListener(_->{
+
+            model.updatePaymentDate(currentFinesId);
+            view.goHome(view.main);
+            view.returnButton.setVisible(false);
+            view.homeButton.setVisible(false);
+        });
+
+        view.manage_fines.cancelButton.addActionListener(_->{
+
+            model.cancelFine(currentFinesId);
+            view.goHome(view.main);
+            view.returnButton.setVisible(false);
+            view.homeButton.setVisible(false);
+        });
+
+
+        view.main.reportsButton.addActionListener(_ -> {
+
+            LocalDate currentDate = LocalDate.now();
+            LocalDate past30DaysDate = currentDate.minusDays(30);
+
+            // Current year and month
+            int currentYear = currentDate.getYear();
+            int currentMonth = currentDate.getMonthValue();
+
+            // Year and month for 30 days ago
+            int pastYear = past30DaysDate.getYear();
+            int pastMonth = past30DaysDate.getMonthValue();
+
+            ArrayList<String> topBorrowed = model.getMostBorrowedISBNsLastTwoYears();
+            ArrayList<String> newlyAcquired = model.getNewlyAcquiredBooks(currentYear, currentMonth, pastYear, pastMonth);
+            ArrayList<String> patronActivity = model.getPatronActivity(currentYear, currentMonth);
+            ArrayList<String> bookRatings = model.getReviewSummary();
+
+            view.reports.list.removeAll();
+
+            view.reports.createTextBox("- Top Borrowed Books -");
+            for (String e : topBorrowed)
+            {
+                view.reports.createTextBox(e);
+            }
+            view.reports.createTextBox("- Newly Acquired Books -");
+            for (String e : newlyAcquired)
+            {
+                view.reports.createTextBox(e);
+            }
+            view.reports.createTextBox("- Patron Activity -");
+            for (String e : patronActivity)
+            {
+                view.reports.createTextBox(e);
+            }
+            view.reports.createTextBox("- Book Ratings -");
+            for (String e : bookRatings)
+            {
+                view.reports.createTextBox(e);
+            }
+
+            view.moveToFront(view.reports);
+
+            view.returnButton.setVisible(true);
+            view.homeButton.setVisible(true);
+
+
+
 
         });
 
@@ -1388,7 +1484,133 @@ public class Controller {
         }, AWTEvent.MOUSE_EVENT_MASK);
 
 
+        Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
+            if (view.fines_list.isVisible()) {
+                if (event instanceof MouseEvent evt) {
+                    if (evt.getID() == MouseEvent.MOUSE_PRESSED) {
+                        if (evt.getSource() instanceof JTextPane textBox) {
+                            if (view.fines_list.textBoxList.contains(textBox)) {
+                                if (evt.getClickCount() == 1) {
+                                    clearTextBox(view.fines_list.textBoxList);
+
+                                    currentTextPane = textBox;
+                                    currentTextPane.setBackground(new Color(31, 117, 254));
+                                    currentTextPane.setForeground(Color.white);
+
+                                    currentFinesId = model.removeTextSuffix(currentTextPane.getText());
+
+
+                                } else if (evt.getClickCount() == 2) {
+
+                                    Fines fineinfo = model.getFineDetailsByFineId(currentFinesId);
+
+                                    view.manage_fines.fineid.setText(fineinfo.fineId);
+                                    view.manage_fines.fineamount.setText(String.valueOf(fineinfo.fineAmount));
+                                    view.manage_fines.paymentdate.setText(fineinfo.paymentDate);
+                                    view.manage_fines.borrowid.setText(fineinfo.borrowId);
+                                    view.manage_fines.clerkid.setText(fineinfo.clerkId);
+                                    view.manage_fines.status.setText(fineinfo.status);
+
+
+                                    view.moveToFront(view.manage_fines);
+
+
+
+                                }
+                            }
+                        }
+                        else
+                        {
+                            clearTextBox(view.fines_list.textBoxList);
+                        }
+                    }
+                    else {
+                        if (evt.getSource() instanceof JTextPane textBox) {
+                            if (view.fines_list.textBoxList.contains(textBox)) {
+                                for (JTextPane textPane : view.fines_list.textBoxList) {
+                                    if (!textPane.getBackground().equals(new Color(31, 117, 254))) {
+                                        textPane.setBackground(Color.white);
+                                        textPane.setForeground(Color.black);
+                                    }
+                                }
+
+                                if (!textBox.getBackground().equals(new Color(31, 117, 254))) {
+                                    textBox.setBackground(Color.lightGray);
+                                }
+                            }
+                        } else {
+                            for (JTextPane textPane : view.fines_list.textBoxList) {
+                                if (!textPane.getBackground().equals(new Color(31, 117, 254))) {
+                                    textPane.setBackground(Color.white);
+                                    textPane.setForeground(Color.black);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }, AWTEvent.MOUSE_EVENT_MASK);
+
+        Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
+            if (view.borrowing_list_review.isVisible()) {
+                if (event instanceof MouseEvent evt) {
+                    if (evt.getID() == MouseEvent.MOUSE_PRESSED) {
+                        if (evt.getSource() instanceof JTextPane textBox) {
+                            if (view.borrowing_list_review.textBoxList.contains(textBox)) {
+                                if (evt.getClickCount() == 1) {
+                                    clearTextBox(view.borrowing_list_review.textBoxList);
+
+                                    currentTextPane = textBox;
+                                    currentTextPane.setBackground(new Color(31, 117, 254));
+                                    currentTextPane.setForeground(Color.white);
+
+                                    currentBorrowingId = currentTextPane.getText();
+
+
+                                } else if (evt.getClickCount() == 2) {
+                                    view.add_review.scoreTextField.setText("");
+                                    view.add_review.commentTextField.setText("");
+
+                                    view.moveToFront(view.add_review);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            clearTextBox(view.borrowing_list_review.textBoxList);
+                        }
+                    }
+                    else {
+                        if (evt.getSource() instanceof JTextPane textBox) {
+                            if (view.borrowing_list_review.textBoxList.contains(textBox)) {
+                                for (JTextPane textPane : view.borrowing_list_review.textBoxList) {
+                                    if (!textPane.getBackground().equals(new Color(31, 117, 254))) {
+                                        textPane.setBackground(Color.white);
+                                        textPane.setForeground(Color.black);
+                                    }
+                                }
+
+                                if (!textBox.getBackground().equals(new Color(31, 117, 254))) {
+                                    textBox.setBackground(Color.lightGray);
+                                }
+                            }
+                        } else {
+                            for (JTextPane textPane : view.borrowing_list_review.textBoxList) {
+                                if (!textPane.getBackground().equals(new Color(31, 117, 254))) {
+                                    textPane.setBackground(Color.white);
+                                    textPane.setForeground(Color.black);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }, AWTEvent.MOUSE_EVENT_MASK);
+
+
     }
+
+
 
 
     public void clearTextBox(ArrayList<JTextPane> textBox) {

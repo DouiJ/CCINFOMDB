@@ -5,13 +5,8 @@ import java.awt.*;
 
 public class review_inputPanel extends JPanel {
 
-    public JLabel idLabel;
-    public JTextField idTextField;
-    public JLabel scoreLabel;
+    // Public Text Fields;
     public JTextField scoreTextField;
-    public JLabel dateLabel;
-    public JTextField dateTextField;
-    public JLabel commentLabel;
     public JTextField commentTextField;
     public JButton createButton;
 
@@ -20,66 +15,40 @@ public class review_inputPanel extends JPanel {
         this.setBackground(Color.WHITE);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.insets = new Insets(4, 4, 15, 4);
+        gbc.anchor = GridBagConstraints.NORTHWEST;
+        gbc.insets = new Insets(4, 4, 11, 4);
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-        // ID
-        idLabel = new JLabel("ID:");
-        idLabel.setFont(new Font("Bookman Old Style", Font.BOLD, 14));
-        this.add(idLabel, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        idTextField = new JTextField(15);
-        idTextField.setFont(new Font("Bookman Old Style", Font.PLAIN, 14));
-        this.add(idTextField, gbc);
-
-        // Score
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        scoreLabel = new JLabel("Score:");
-        scoreLabel.setFont(new Font("Bookman Old Style", Font.BOLD, 14));
+        // Initialize and add ID Label
+        JLabel scoreLabel = new JLabel("Score:");
+        scoreLabel.setFont(new Font("Bookman Old Style", Font.BOLD, 11));
         this.add(scoreLabel, gbc);
 
+        // Initialize and add Score TextField
         gbc.gridx = 1;
-        gbc.gridy = 1;
         scoreTextField = new JTextField(15);
-        scoreTextField.setFont(new Font("Bookman Old Style", Font.PLAIN, 14));
+        scoreTextField.setFont(new Font("Bookman Old Style", Font.PLAIN, 11));
         this.add(scoreTextField, gbc);
 
-        // Date
+        // Initialize and add Comment Label
         gbc.gridx = 0;
-        gbc.gridy = 2;
-        dateLabel = new JLabel("Date:");
-        dateLabel.setFont(new Font("Bookman Old Style", Font.BOLD, 14));
-        this.add(dateLabel, gbc);
-
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        dateTextField = new JTextField(15);
-        dateTextField.setFont(new Font("Bookman Old Style", Font.PLAIN, 14));
-        this.add(dateTextField, gbc);
-
-        // Comment
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        commentLabel = new JLabel("Comment:");
-        commentLabel.setFont(new Font("Bookman Old Style", Font.BOLD, 14));
+        gbc.gridy = 1;
+        JLabel commentLabel = new JLabel("Comment:");
+        commentLabel.setFont(new Font("Bookman Old Style", Font.BOLD, 11));
         this.add(commentLabel, gbc);
 
+        // Initialize and add Comment TextField
         gbc.gridx = 1;
-        gbc.gridy = 3;
         commentTextField = new JTextField(15);
-        commentTextField.setFont(new Font("Bookman Old Style", Font.PLAIN, 14));
+        commentTextField.setFont(new Font("Bookman Old Style", Font.PLAIN, 11));
         this.add(commentTextField, gbc);
 
-        // Create Button
+        // Initialize and add Create Button
         gbc.gridx = 1;
-        gbc.gridy = 4;
-        createButton = new JButton("Create");
-        createButton.setFont(new Font("Bookman Old Style", Font.BOLD, 15));
+        gbc.gridy = 2;
+        createButton = new JButton("CREATE");
+        createButton.setFont(new Font("Bookman Old Style", Font.BOLD, 11));
         this.add(createButton, gbc);
     }
 }

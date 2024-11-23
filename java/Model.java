@@ -4,75 +4,8 @@ import panels.*;
 
 import javax.swing.*;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
-
-// Struct for Report 1: Top 10 Most Borrowed Books
-class TopBorrowedBook {
-    public String bookId;
-    public int borrowCount;
-
-    public TopBorrowedBook(String bookId, int borrowCount) {
-        this.bookId = bookId;
-        this.borrowCount = borrowCount;
-    }
-}
-
-// Struct for Report 2: Newly Acquired Books
-class NewlyAcquiredBook {
-    public String acquisitionId;
-    public String title;
-    public String authorLastName;
-    public String authorFirstName;
-    public Date acquisitionDate;
-
-    public NewlyAcquiredBook(String acquisitionId, String title, String authorLastName, String authorFirstName, Date acquisitionDate) {
-        this.acquisitionId = acquisitionId;
-        this.title = title;
-        this.authorLastName = authorLastName;
-        this.authorFirstName = authorFirstName;
-        this.acquisitionDate = acquisitionDate;
-    }
-}
-
-// Struct for Report 3: Patron Activity
-class PatronActivity {
-    public String patronId;
-    public String firstName;
-    public String lastName;
-    public String status;
-    public int totalBorrows;
-    public double totalFines;
-    public int booksOverdue;
-    public double avgDaysToReturn;
-
-    public PatronActivity(String patronId, String firstName, String lastName, String status, int totalBorrows, double totalFines, int booksOverdue, double avgDaysToReturn) {
-        this.patronId = patronId;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.status = status;
-        this.totalBorrows = totalBorrows;
-        this.totalFines = totalFines;
-        this.booksOverdue = booksOverdue;
-        this.avgDaysToReturn = avgDaysToReturn;
-    }
-}
-
-// Struct for Report 4: Book Rating
-class BookRating {
-    public String isbn;
-    public String title;
-    public String author;
-    public double avgRating;
-    public int totalRatings;
-
-    public BookRating(String isbn, String title, String author, double avgRating, int totalRatings) {
-        this.isbn = isbn;
-        this.title = title;
-        this.author = author;
-        this.avgRating = avgRating;
-        this.totalRatings = totalRatings;
-    }
-}
 
 
 public class Model {
@@ -85,6 +18,7 @@ public class Model {
     public book_inventory_management inventory;
     public book_acquisition_management acquisition;
     public book_borrowing_transaction borrowing;
+    public book_review_transaction review;
     public borrowing_fines_management fines;
 
 
@@ -99,8 +33,7 @@ public class Model {
         inventory = new book_inventory_management(connection);
         acquisition = new book_acquisition_management(connection);
         borrowing = new book_borrowing_transaction(connection);
-
-
+        review = new book_review_transaction(connection);
     }
 
     private void connectToDatabase() {
@@ -240,7 +173,8 @@ public class Model {
 
     public ArrayList<String> getFines() {
         ArrayList<String> finesList = new ArrayList<>();
-        String query = "SELECT fine_id, payment_date FROM Borrowing_Fines";
+        // SQL query to select fines with 'A' status
+        String query = "SELECT fine_id, payment_date FROM Borrowing_Fines WHERE status = 'A'";
 
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
@@ -255,6 +189,7 @@ public class Model {
 
         return finesList;
     }
+
 
     public ArrayList<String> getAllPatronIds() {
         ArrayList<String> patronIds = new ArrayList<>();
@@ -587,65 +522,69 @@ public class Model {
         }
     }
 
-    public static ArrayList<TopBorrowedBook> getTopBorrowedBooks(Connection conn, int year, int month) {
+    public ArrayList<String> getMostBorrowedISBNsLastTwoYears() {
+        // SQL query to get the most borrowed ISBNs in the past 2 years
         String query = """
-            SELECT bh.Book_id, COUNT(bh.Book_id) AS borrow_count
-            FROM Borrowing_History bh
-            WHERE YEAR(bh.date_borrowed) = ? AND MONTH(bh.date_borrowed) = ?
-            GROUP BY bh.Book_id
-            ORDER BY borrow_count DESC
-            LIMIT 10
-        """;
+        SELECT bh.Book_id, COUNT(bh.Book_id) AS borrow_count
+        FROM Borrowing_History bh
+        WHERE bh.date_borrowed >= DATE_SUB(CURDATE(), INTERVAL 2 YEAR)
+        GROUP BY bh.Book_id
+        ORDER BY borrow_count DESC
+        LIMIT 10
+    """;
 
-        ArrayList<TopBorrowedBook> results = new ArrayList<>();
+        ArrayList<String> results = new ArrayList<>();
 
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, year);
-            pstmt.setInt(2, month);
-
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) { // Use the global `connection`
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    results.add(new TopBorrowedBook(rs.getString("Book_id"), rs.getInt("borrow_count")));
+                    String isbn = rs.getString("Book_id");
+                    int count = rs.getInt("borrow_count");
+                    results.add(isbn + " (" + count + " times borrowed)");
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error while fetching top borrowed books: " + e.getMessage());
+            System.err.println("Error while fetching most borrowed ISBNs in the past 2 years: " + e.getMessage());
+        }
+
+        if (results.isEmpty()) {
+            System.err.println("No books found in the past 2 years.");
         }
 
         return results;
     }
 
 
-    public static ArrayList<NewlyAcquiredBook> getNewlyAcquiredBooks(Connection conn, String branchId, int year1, int month1, int year2, int month2) {
-        String query = """
-                    SELECT ba.acquisition_id, bd.title, bd.author_last_name, bd.author_first_name, ba.acquisition_date
-                    FROM Book_Acquisitions ba
-                    JOIN Book_Details bd ON ba.isbn = bd.isbn
-                    WHERE ba.branch_delivered = ? AND (
-                        (YEAR(ba.acquisition_date) = ? AND MONTH(ba.acquisition_date) = ?)
-                        OR
-                        (YEAR(ba.acquisition_date) = ? AND MONTH(ba.acquisition_date) = ?)
-                    )
-                    ORDER BY ba.acquisition_date DESC
-                """;
 
-        ArrayList<NewlyAcquiredBook> results = new ArrayList<>();
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setString(1, branchId);
-            pstmt.setInt(2, year1);
-            pstmt.setInt(3, month1);
-            pstmt.setInt(4, year2);
-            pstmt.setInt(5, month2);
+
+    public ArrayList<String> getNewlyAcquiredBooks(int year1, int month1, int year2, int month2) {
+        String query = """
+        SELECT ba.acquisition_id, bd.title, bd.author_last_name, bd.author_first_name, ba.acquisition_date, ba.branch_delivered
+        FROM Book_Acquisitions ba
+        JOIN Book_Details bd ON ba.isbn = bd.isbn
+        WHERE 
+            (YEAR(ba.acquisition_date) = ? AND MONTH(ba.acquisition_date) = ?)
+            OR
+            (YEAR(ba.acquisition_date) = ? AND MONTH(ba.acquisition_date) = ?)
+        ORDER BY ba.acquisition_date DESC
+    """;
+
+        ArrayList<String> results = new ArrayList<>();
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setInt(1, year1);
+            pstmt.setInt(2, month1);
+            pstmt.setInt(3, year2);
+            pstmt.setInt(4, month2);
+
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                results.add(new NewlyAcquiredBook(
-                        rs.getString("acquisition_id"),
-                        rs.getString("title"),
-                        rs.getString("author_last_name"),
-                        rs.getString("author_first_name"),
-                        rs.getDate("acquisition_date")
-                ));
+                String entry = "Acquisition ID: " + rs.getString("acquisition_id") +
+                        ", Title: " + rs.getString("title") +
+                        ", Author: " + rs.getString("author_first_name") + " " + rs.getString("author_last_name") +
+                        ", Date: " + rs.getDate("acquisition_date") +
+                        ", Branch Delivered: " + rs.getString("branch_delivered");
+                results.add(entry);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -653,24 +592,25 @@ public class Model {
         return results;
     }
 
-    public static ArrayList<PatronActivity> getPatronActivity(Connection conn, int year, int month) {
-        String query = """
-                    SELECT p.patron_id, p.first_name, p.last_name, p.status, 
-                           COUNT(DISTINCT bh.borrow_id) AS total_borrows, 
-                           COALESCE(SUM(bf.fine_amount), 0) AS total_fines, 
-                           SUM(CASE WHEN bh.date_due < bh.date_returned THEN 1 ELSE 0 END) AS books_overdue, 
-                           AVG(DATEDIFF(bh.date_returned, bh.date_due)) AS avg_days_to_return
-                    FROM Patrons p
-                    LEFT JOIN Borrowing_History bh ON p.patron_id = bh.patron_id
-                    LEFT JOIN Borrowing_Fines bf ON bh.borrow_id = bf.borrow_id
-                    WHERE (MONTH(bh.date_borrowed) = ? AND YEAR(bh.date_borrowed) = ?)
-                       OR (MONTH(bf.payment_date) = ? AND YEAR(bf.payment_date) = ?)
-                    GROUP BY p.patron_id, p.first_name, p.last_name, p.status
-                    ORDER BY p.last_name, p.first_name
-                """;
 
-        ArrayList<PatronActivity> results = new ArrayList<>();
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
+    public ArrayList<String> getPatronActivity(int year, int month) {
+        String query = """
+        SELECT p.patron_id, p.first_name, p.last_name, p.status, 
+               COUNT(DISTINCT bh.borrow_id) AS total_borrows, 
+               COALESCE(SUM(bf.fine_amount), 0) AS total_fines, 
+               SUM(CASE WHEN bh.date_due < bh.date_returned THEN 1 ELSE 0 END) AS books_overdue, 
+               AVG(DATEDIFF(bh.date_returned, bh.date_due)) AS avg_days_to_return
+        FROM Patrons p
+        LEFT JOIN Borrowing_History bh ON p.patron_id = bh.patron_id
+        LEFT JOIN Borrowing_Fines bf ON bh.borrow_id = bf.borrow_id
+        WHERE (MONTH(bh.date_borrowed) = ? AND YEAR(bh.date_borrowed) = ?)
+           OR (MONTH(bf.payment_date) = ? AND YEAR(bf.payment_date) = ?)
+        GROUP BY p.patron_id, p.first_name, p.last_name, p.status
+        ORDER BY p.last_name, p.first_name
+    """;
+
+        ArrayList<String> results = new ArrayList<>();
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             pstmt.setInt(1, month);
             pstmt.setInt(2, year);
             pstmt.setInt(3, month);
@@ -678,62 +618,208 @@ public class Model {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                results.add(new PatronActivity(
-                        rs.getString("patron_id"),
-                        rs.getString("first_name"),
-                        rs.getString("last_name"),
-                        rs.getString("status"),
-                        rs.getInt("total_borrows"),
-                        rs.getDouble("total_fines"),
-                        rs.getInt("books_overdue"),
-                        rs.getDouble("avg_days_to_return")
-                ));
+                String entry = "Patron ID: " + rs.getString("patron_id") +
+                        ", Name: " + rs.getString("first_name") + " " + rs.getString("last_name") +
+                        ", Borrows: " + rs.getInt("total_borrows") +
+                        ", Fines: " + rs.getDouble("total_fines") +
+                        ", Overdue: " + rs.getInt("books_overdue") +
+                        ", Avg Days to Return: " + rs.getDouble("avg_days_to_return");
+                results.add(entry);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return results;
+        return results; // Return ArrayList of strings
     }
 
-    public static ArrayList<BookRating> getBookRatings(Connection conn, int year1, int month1, int year2, int month2) {
+    public ArrayList<String> getReviewSummary() {
+        // SQL query to get the total reviews for a patron, total reviews for a book, and average rating for the book
         String query = """
-            SELECT bd.isbn, bd.title, 
-                   CONCAT(bd.author_first_name, ' ', bd.author_last_name) AS author, 
-                   AVG(br.rating_score) AS avg_rating, 
-                   COUNT(br.rating_id) AS total_ratings
-            FROM Book_Rating br
-            JOIN Borrowing_History bh ON br.borrow_id = bh.borrow_id
-            JOIN Book_Details bd ON bh.book_id = bd.isbn
-            WHERE (YEAR(br.rating_date) = ? AND MONTH(br.rating_date) = ?)
-               OR (YEAR(br.rating_date) = ? AND MONTH(br.rating_date) = ?)
-            GROUP BY bd.isbn, bd.title, author
-            ORDER BY avg_rating DESC
-        """;
+        SELECT 
+            p.patron_id, 
+            COUNT(DISTINCT br.rating_id) AS total_reviews_by_patron,
+            bd.isbn AS book_id, 
+            COUNT(br.rating_id) AS total_reviews_for_book,
+            AVG(br.rating_score) AS avg_rating_for_book
+        FROM 
+            Book_Rating br
+        JOIN 
+            Borrowing_History bh ON br.borrow_id = bh.borrow_id
+        JOIN 
+            Patrons p ON bh.patron_id = p.patron_id
+        JOIN 
+            Book_Details bd ON bh.book_id = bd.isbn
+        GROUP BY 
+            p.patron_id, bd.isbn
+        ORDER BY 
+            p.patron_id, bd.isbn;
+    """;
 
-        ArrayList<BookRating> results = new ArrayList<>();
+        ArrayList<String> results = new ArrayList<>();
 
-        try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-            pstmt.setInt(1, year1);
-            pstmt.setInt(2, month1);
-            pstmt.setInt(3, year2);
-            pstmt.setInt(4, month2);
+        try (PreparedStatement pstmt = connection.prepareStatement(query);
+             ResultSet rs = pstmt.executeQuery()) {
 
+            while (rs.next()) {
+                // Patron ID and the total number of reviews made by the patron
+                String patronSummary = "Patron ID: " + rs.getString("patron_id") +
+                        " Total Reviews: " + rs.getInt("total_reviews_by_patron");
+
+                // Book ID, total number of reviews for the book, and the average rating for the book
+                String bookSummary = "Book ID: " + rs.getString("book_id") +
+                        " Total Reviews: " + rs.getInt("total_reviews_for_book") +
+                        " Avg Rating: " + rs.getDouble("avg_rating_for_book");
+
+                // Combine both results into one string and add to the list
+                results.add(patronSummary + ", " + bookSummary);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while fetching review summary: " + e.getMessage());
+        }
+
+        return results;  // Return ArrayList of strings
+    }
+
+
+
+    public ArrayList<String> getUnratedBorrowIds() {
+        // SQL query to find borrow_ids that are not in the Book_Rating table
+        String query = """
+                SELECT bh.borrow_id
+                FROM Borrowing_History bh
+                LEFT JOIN Book_Rating br ON bh.borrow_id = br.borrow_id
+                WHERE br.borrow_id IS NULL
+                """;
+
+        ArrayList<String> borrowIds = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    results.add(new BookRating(
-                            rs.getString("isbn"),
-                            rs.getString("title"),
-                            rs.getString("author"),
-                            rs.getDouble("avg_rating"),
-                            rs.getInt("total_ratings")
-                    ));
+                    borrowIds.add(rs.getString("borrow_id"));
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error while fetching book ratings: " + e.getMessage());
+            System.err.println("Error while fetching unrated borrow_ids: " + e.getMessage());
         }
 
-        return results;
+        return borrowIds;
     }
+
+    public ArrayList<String> getAllReviews() {
+        // SQL query to get all reviews along with the borrow_id, score, and comment
+        String query = """
+                SELECT br.borrow_id, br.rating_score, br.rating_comment
+                FROM Book_Rating br
+                JOIN Borrowing_History bh ON br.borrow_id = bh.borrow_id
+                WHERE br.status = 'A'  -- Only active reviews
+                """;
+
+        ArrayList<String> reviews = new ArrayList<>();
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    String borrowId = rs.getString("borrow_id");
+                    float ratingScore = rs.getFloat("rating_score");
+                    String ratingComment = rs.getString("rating_comment");
+
+                    // Format the string and add it to the list
+                    String review = "Borrow ID: " + borrowId + ", Score: " + ratingScore + ", Comment: " + ratingComment;
+                    reviews.add(review);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while fetching reviews: " + e.getMessage());
+        }
+
+        return reviews;
+    }
+
+    public Fines getFineDetailsByFineId(String fineId) {
+        // SQL query to get the fine details by fine_id
+        String query = """
+                SELECT fine_id, fine_amount, payment_date, borrow_id, clerk_id, status
+                FROM Borrowing_Fines
+                WHERE fine_id = ?
+                """;
+
+        Fines fineDetails = null;
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, fineId);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    // Create FineDetails object and populate it with values from the result set
+                    fineDetails = new Fines(
+                            rs.getString("fine_id"),
+                            rs.getDouble("fine_amount"),
+                            rs.getString("payment_date"),
+                            rs.getString("borrow_id"),
+                            rs.getString("clerk_id"),
+                            rs.getString("status")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while fetching fine details: " + e.getMessage());
+        }
+
+        return fineDetails;
+    }
+
+    public int cancelFine(String fineId) {
+        // SQL query to update the fine status to 'C'
+        String query = "UPDATE Borrowing_Fines SET status = 'C' WHERE fine_id = ?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, fineId);  // Set the fine_id parameter
+
+            int rowsUpdated = pstmt.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("Fine status updated to 'C' (Cancelled).");
+                return 1;  // Success
+            } else {
+                System.out.println("No fine found with the given fine_id or status already 'C'.");
+                return 0;  // No rows updated (either fine doesn't exist or status is already 'C')
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while updating fine status: " + e.getMessage());
+            return 0;  // Error during the process
+        }
+    }
+
+    public int updatePaymentDate(String fineId) {
+        // SQL query to update the payment_date to the current date
+        String query = "UPDATE Borrowing_Fines SET payment_date = ? WHERE fine_id = ?";
+
+        // Get current date
+        LocalDate currentDate = LocalDate.now();
+        Date sqlDate = Date.valueOf(currentDate);  // Convert LocalDate to java.sql.Date
+
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setDate(1, sqlDate);  // Set the current date as the payment_date
+            pstmt.setString(2, fineId); // Set the fine_id parameter
+
+            int rowsUpdated = pstmt.executeUpdate();
+
+            if (rowsUpdated > 0) {
+                System.out.println("Payment date updated successfully.");
+                return 1;  // Success
+            } else {
+                System.out.println("No fine found with the given fine_id.");
+                return 0;  // No rows updated (either fine doesn't exist or already updated)
+            }
+        } catch (SQLException e) {
+            System.err.println("Error while updating payment_date: " + e.getMessage());
+            return 0;  // Error during the process
+        }
+    }
+
+
+
+
 
 }

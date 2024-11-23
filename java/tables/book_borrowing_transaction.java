@@ -107,10 +107,10 @@ public class book_borrowing_transaction {
     private boolean canPatronBorrow() {
         try (PreparedStatement pstmt = connection.prepareStatement(
                 "SELECT COUNT(*) as borrow_count FROM Borrowing_History " +
-                        "WHERE patron_id = ? AND borrow_status IN ('B', 'O')");
+                        "WHERE patron_id = ? AND borrow_status IN ('B')");
              PreparedStatement overduePstmt = connection.prepareStatement(
                      "SELECT COUNT(*) as overdue_count FROM Borrowing_History " +
-                             "WHERE patron_id = ? AND borrow_status IN ('O', 'L')")) {
+                             "WHERE patron_id = ? AND borrow_status IN ('O')")) {
 
             pstmt.setString(1, patron_id);
             ResultSet rs = pstmt.executeQuery();
@@ -125,6 +125,7 @@ public class book_borrowing_transaction {
             rs.close();
             overdueRs.close();
 
+            // Patron can borrow if they have fewer than 3 active borrowings and no overdue items
             return currentBorrows < 3 && overdueCount == 0;
 
         } catch (SQLException e) {

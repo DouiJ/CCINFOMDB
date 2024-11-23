@@ -45,6 +45,11 @@ public class View extends JFrame {
     public book_listPanel book_list_borrow;
     public patron_listPanel patron_list_borrow;
     public borrowing_viewPanel borrowing_view;
+    public reports_listPanel reports;
+    public review_inputPanel add_review;
+    public borrowing_listPanel borrowing_list_review;
+    public review_listPanel review_list;
+    public fines_managePanel manage_fines;
 
     public View() {
 
@@ -86,6 +91,14 @@ public class View extends JFrame {
         book_list_borrow = new book_listPanel();
         patron_list_borrow = new patron_listPanel();
         borrowing_view = new borrowing_viewPanel();
+        reports = new reports_listPanel();
+        add_review = new review_inputPanel();
+        borrowing_list_review = new borrowing_listPanel();
+        review_list = new review_listPanel();
+        manage_fines = new fines_managePanel();
+
+
+
 
         this.setTitle("Library Management System");
         this.setSize(400, 400);
@@ -130,7 +143,11 @@ public class View extends JFrame {
         setLayerBound(book_list_borrow, 0);
         setLayerBound(patron_list_borrow, 0);
         setLayerBound(borrowing_view, 0);
-
+        setLayerBound(reports, 0);
+        setLayerBound(add_review, 0);
+        setLayerBound(borrowing_list_review, 0);
+        setLayerBound(review_list, 0);
+        setLayerBound(manage_fines, 0);
 
 
 
