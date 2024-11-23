@@ -5,17 +5,17 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class reportNewlyAcquiredBooksPanel extends JPanel {
+public class reportBookRatingPanel extends JPanel {
 
     private DefaultTableModel tableModel;
 
-    public reportNewlyAcquiredBooksPanel(List<Object[]> data) {
+    public reportBookRatingPanel(List<Object[]> data) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
 
         // Define column names
         String[] columnNames = {
-                "Acquisition ID", "Title", "Author", "Acquisition Date"
+                "ISBN", "Title", "Average Rating", "Total Ratings"
         };
 
         // Create the table model with the column names
@@ -54,13 +54,13 @@ public class reportNewlyAcquiredBooksPanel extends JPanel {
         reports report = new reports();
         report.year = 2023; // Set the desired year
         report.month = 5; // Set the desired month
-        List<Object[]> newlyAcquiredBooksData = report.newlyAcquiredBooks();
+        List<Object[]> bookRatingsData = report.bookRatings();
 
         // Create and display the panel with the data
-        JFrame frame = new JFrame("Newly Acquired Books Panel");
+        JFrame frame = new JFrame("Book Ratings Panel");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 400);
-        reportNewlyAcquiredBooksPanel panel = new reportNewlyAcquiredBooksPanel(newlyAcquiredBooksData);
+        reportBookRatingPanel panel = new reportBookRatingPanel(bookRatingsData);
         frame.add(panel);
         frame.setVisible(true);
     }

@@ -5,11 +5,11 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class patronActivityPanel2 extends JPanel {
+public class reportPatronActivityPanel extends JPanel {
 
     private DefaultTableModel tableModel;
 
-    public patronActivityPanel2(List<Object[]> data) {
+    public reportPatronActivityPanel(List<Object[]> data) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
 
@@ -61,7 +61,7 @@ public class patronActivityPanel2 extends JPanel {
         JFrame frame = new JFrame("Patron Activity Panel");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 400);
-        patronActivityPanel2 panel = new patronActivityPanel2(data);
+        reportPatronActivityPanel panel = new reportPatronActivityPanel(data);
         frame.add(panel);
         frame.setVisible(true);
     }
