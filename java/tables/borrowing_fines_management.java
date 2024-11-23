@@ -186,6 +186,43 @@ public class borrowing_fines_management {
 
     }
 
+    public int update_Paid_date() {
+        try (Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://127.0.0.1:3306/library",
+                "root",
+                "3d6%vQmT"
+        )) {
+            System.out.println("Connection to DB Successful.");
+
+            String sql = "UPDATE Borrowing_Fines SET payment_date=? WHERE fine_id=?";
+            PreparedStatement pstmt = connection.prepareStatement(sql);
+
+            pstmt.setString(1, payment_date);
+            pstmt.setString(2, fine_id);
+
+            pstmt.executeUpdate();
+            System.out.println("Record was updated");
+
+            int rowsUpdated = pstmt.executeUpdate();
+            pstmt.close();
+            connection.close();
+
+            if (rowsUpdated > 0) {
+                System.out.println("Record successfully updated.");
+                return 1;
+            } else {
+                System.out.println("Record unsuccessfully updated.");
+                return 0;
+            }
+        } catch (SQLException e) {
+            System.out.println("Database error: " + e.getMessage());
+            return 0;
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            return 0;
+        }
+    }
+
     public void setBorrow_id(String borrow_id) {
         this.borrow_id = borrow_id;
     }
