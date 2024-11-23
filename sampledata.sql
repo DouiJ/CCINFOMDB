@@ -10,8 +10,6 @@ VALUES
 
 INSERT INTO employees (employee_id, last_name, first_name, age, phone_no, email, job_title, hire_date, full_address, branch_id)
 VALUES
-    INSERT INTO employees (employee_id, last_name, first_name, age, phone_no, email, job_title, hire_date, full_address, branch_id)
-VALUES
     -- Branch L0001
     ('E0001', 'Smith', 'John',   45, '9876543210123', 'john.smith@example.com',    'A', '2020-01-01', '123 Main St, City1, Province1, 10001', 'L0001'),
     ('E0006', 'Davis', 'Alice',  30, '9876543210128', 'alice.davis@example.com',   'C', '2021-03-10', '111 Birch St, City1, Province1, 10001', 'L0001'),
