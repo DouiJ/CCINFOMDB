@@ -10,7 +10,7 @@ public class Main extends JFrame {
         this.setLayout(null);
         this.setResizable(false);
 
-        bookReviewUpdatePanel file = new bookReviewUpdatePanel();
+        branch_crudPanel file = new branch_crudPanel();
         file.setBounds(0, 0, 400, 400);
 
         this.add(file);
