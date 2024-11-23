@@ -1,21 +1,23 @@
-package libraryDB.reports;
-
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import libraryDB.reports;
+
 import java.awt.*;
 import java.util.List;
 
-public class reportNewlyAcquiredBooksPanel extends JPanel {
+public class reportPatronActivityPanel extends JPanel {
 
     private DefaultTableModel tableModel;
 
-    public reportNewlyAcquiredBooksPanel(List<Object[]> data) {
+    public reportPatronActivityPanel(List<Object[]> data) {
         this.setLayout(new BorderLayout());
         this.setBackground(Color.WHITE);
 
         // Define column names
         String[] columnNames = {
-                "Acquisition ID", "Title", "Author", "Acquisition Date"
+                "Patron ID", "First Name", "Last Name", "Status",
+                "Total Books Borrowed", "Overdue Transactions", "Total Fines", "Avg Return Days"
         };
 
         // Create the table model with the column names
@@ -54,13 +56,13 @@ public class reportNewlyAcquiredBooksPanel extends JPanel {
         reports report = new reports();
         report.year = 2023; // Set the desired year
         report.month = 5; // Set the desired month
-        List<Object[]> newlyAcquiredBooksData = report.newlyAcquiredBooks();
+        List<Object[]> data = report.patronActivity();
 
         // Create and display the panel with the data
-        JFrame frame = new JFrame("Newly Acquired Books Panel");
+        JFrame frame = new JFrame("Patron Activity Panel");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 400);
-        reportNewlyAcquiredBooksPanel panel = new reportNewlyAcquiredBooksPanel(newlyAcquiredBooksData);
+        reportPatronActivityPanel panel = new reportPatronActivityPanel(data);
         frame.add(panel);
         frame.setVisible(true);
     }

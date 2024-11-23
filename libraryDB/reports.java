@@ -1,4 +1,4 @@
-package libraryDB.reports;
+package libraryDB;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
