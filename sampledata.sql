@@ -96,7 +96,7 @@ VALUES
     ('B0015', '2023-05-19', '2023-06-02', NULL,         'O', 'I0007', 'P0002', 'E0006', 'A'),
     ('B0016', '2023-05-20', '2023-06-03', '2023-06-05', 'R', 'I0010', 'P0005', 'E0006', 'A');
 
-
+    
 INSERT INTO borrowing_fines (fine_id, borrow_id, clerk_id, fine_amount, payment_date, status)
 VALUES
     ('F0001', 'B0002', 'E0003', 1500.00, '2020-06-10', 'A'),
@@ -108,7 +108,7 @@ VALUES
     ('F0007', 'B0008', 'E0003', 500.00,  '2023-05-24', 'A'),
     ('F0008', 'B0013', 'E0003', 1300.00, '2023-05-30', 'A'),
     ('F0009', 'B0014', 'E0003', 500.00,  '2023-05-17', 'A'),
-    ('F0010', 'B0017', 'E0003', 400.00,  '2023-05-25', 'A');
+    ('F0010', 'B0016', 'E0003', 750.00,  '2023-06-05', 'A'); 
 
 INSERT INTO book_rating (rating_id, rating_date, rating_score, rating_comment, borrow_id, status)
 VALUES
